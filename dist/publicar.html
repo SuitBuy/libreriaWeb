@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Acerca del proyecto Sistema para Compartir Libros, Artículos y Revistas." />
+        <meta name="description" content="Publica tu obra en la plataforma." />
         <meta name="author" content="Grupo 6" />
-        <title>Acerca de - Sistema de Libros</title>
+        <title>Publicar Obra - Sistema de Libros</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
@@ -30,13 +30,13 @@
                 </div>
             </div>
         </nav>
-        <header class="masthead" style="background-image: url('assets/img/about-bg.jpg')">
+        <header class="masthead" style="background-image: url('assets/img/contact-bg.jpg')">
             <div class="container position-relative px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="page-heading">
-                            <h1>Acerca de Nuestro Proyecto</h1>
-                            <span class="subheading">Nuestra misión y propuesta de valor.</span>
+                            <h1>Publica tu Obra</h1>
+                            <span class="subheading">Comparte tu conocimiento con la comunidad.</span>
                         </div>
                     </div>
                 </div>
@@ -46,26 +46,33 @@
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
-                        <h2 class="section-heading">Propuesta de Valor</h2>
-                        <p>El sistema ofrece una plataforma digital colaborativa y legal donde los usuarios pueden buscar, compartir y publicar libros, artículos y revistas de forma rápida, económica y segura.</p>
-                        <p>Permite acceder a contenido académico confiable, descubrir recomendaciones y reseñas, y difundir obras propias dentro de una comunidad que promueve el aprendizaje, la creación intelectual y la libre circulación del conocimiento.</p>
-                        
-                        <h2 class="section-heading">Segmento de Clientes</h2>
-                        <p>El público objetivo está compuesto por:</p>
-                        <ul>
-                            <li><b>Estudiantes universitarios</b> de pregrado y posgrado que buscan acceder a material de forma rápida, económica y legal.</li>
-                            <li><b>Autores emergentes, docentes o investigadores</b> que desean publicar, difundir y recibir retroalimentación sobre sus propias obras.</li>
-                            <li><b>Profesionales o autodidactas</b> interesados en el aprendizaje continuo y la lectura cultural.</li>
-                        </ul>
-
-                        <h2 class="section-heading">Dolores del Cliente</h2>
-                        <p>Identificamos las siguientes dificultades que buscamos resolver:</p>
-                        <ul>
-                            <li>Altos costos de los libros, artículos y suscripciones digitales.</li>
-                            <li>Pérdida de tiempo en la búsqueda de información útil y de calidad.</li>
-                            <li>Dificultad para evaluar si un recurso es realmente valioso antes de leerlo.</li>
-                            <li>Autores emergentes carecen de espacios accesibles para publicar y difundir sus obras.</li>
-                        </ul>
+                        <p>Completa el siguiente formulario para subir tu libro, artículo o revista a la plataforma. Tu obra estará disponible para miles de estudiantes.</p>
+                        <div class="my-5">
+                            <form id="contactForm">
+                                <div class="form-floating">
+                                    <input class="form-control" id="name" type="text" placeholder="Título de la Obra..." />
+                                    <label for="name">Título de la Obra</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="author" type="text" placeholder="Autor(es)..." />
+                                    <label for="author">Autor(es)</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="category" type="text" placeholder="Categoría (Ej. Ingeniería, Ciencias)..." />
+                                    <label for="category">Categoría (Ej. Ingeniería, Ciencias)</label>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" placeholder="Resumen o Descripción..." style="height: 12rem"></textarea>
+                                    <label for="message">Resumen o Descripción</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="file" type="file" />
+                                    <label for="file">Archivo de la obra (PDF, DOCX)</label>
+                                </div>
+                                <br />
+                                <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Publicar Obra</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
