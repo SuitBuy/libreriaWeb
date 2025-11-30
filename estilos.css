@@ -1,0 +1,35 @@
+/* estilos.css */
+:root { --primary: #b91d47; --dark: #1a1a1a; --light: #f4f4f4; --success: #27ae60; }
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light); padding-bottom: 50px; }
+
+/* Navbar */
+.navbar { background: var(--dark); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: white; }
+.logo { font-size: 1.5rem; font-weight: bold; color: white; }
+.logo span { color: var(--primary); }
+.nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 0.9rem; }
+.btn-action { background: var(--primary); padding: 8px 15px; border-radius: 4px; }
+
+/* Contenedores */
+.container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+.auth-box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+/* Formularios */
+input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+button { cursor: pointer; background: var(--primary); color: white; border: none; padding: 10px; width: 100%; font-weight: bold; border-radius: 4px; }
+
+/* Grid de Libros */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+.card:hover { transform: translateY(-5px); }
+.card-body { padding: 15px; }
+.tag { font-size: 0.8rem; color: var(--primary); font-weight: bold; text-transform: uppercase; }
+
+/* Detalles y Comentarios */
+.detalle-header { background: white; padding: 30px; border-radius: 8px; margin-bottom: 20px; }
+.comentario-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+.stars { color: gold; }
+
+/* Alertas */
+.alert { padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: center; }
+.error { background: #fadbd8; color: #78281f; }
+.success { background: #d4efdf; color: #186a3b; }
