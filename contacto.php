@@ -8,11 +8,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO mensajes_contacto (nombre, email, mensaje) VALUES ('$nombre', '$email', '$mensaje')";
     @mysqli_query($conn, $sql); 
     $msg = "Mensaje enviado con éxito.";
-}
+}   
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Contacto</title><link rel="stylesheet" href="estilos.css"></head>
+<head><title>Contacto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css"></head>
 <body>
     <nav class="navbar">
         <div class="logo">Biblio<span>Share</span></div>

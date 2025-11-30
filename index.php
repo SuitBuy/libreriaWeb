@@ -18,17 +18,18 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>BiblioShare - Urban Design</title>
+    <title>Urban Canvas - Urban Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">
-            <div class="logo-icon"></div> <span style="margin-left: 10px;">BiblioShare</span>
+            <div class="logo-icon"></div> <span style="margin-left: 10px;">Urban Canvas</span>
         </div>
         <div class="nav-links">
             <a href="index.php">Inicio</a>
-            <a href="premium.php">Planes</a>
+            <a href="premiun.php">Planes</a>
             <a href="contacto.php">Ayuda</a>
             <?php if(isset($_SESSION['uid'])): ?>
                 <a href="perfil.php" style="color:#0f172a; font-weight:600;">Mi Perfil</a>
@@ -53,7 +54,7 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
                         <option>Arte</option>
                         <option>Historia</option>
                     </select>
-                    <button type="submit" class="search-btn">Buscar</button>
+                    <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
                 </form>
             </div>
         </div>
@@ -64,15 +65,15 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
         <h2 class="section-title">Colecciones Destacadas</h2>
         <div class="collections-grid">
             <div class="collection-card col-green" onclick="window.location='index.php?cat=Ciencias'">
-                <span class="collection-icon">🔬</span>
+                <i class="fa-solid fa-microscope collection-icon"></i>
                 <div class="collection-title">Ciencia & Tec</div>
             </div>
             <div class="collection-card col-blue" onclick="window.location='index.php?cat=Arte'">
-                <span class="collection-icon">🎨</span>
+                <i class="fa-solid fa-palette collection-icon"></i>
                 <div class="collection-title">Artes Creativas</div>
             </div>
             <div class="collection-card col-white" onclick="window.location='index.php?cat=Historia'">
-                <span class="collection-icon">🏛️</span>
+                <i class="fa-solid fa-landmark collection-icon"></i>
                 <div class="collection-title">Historia & Cultura</div>
             </div>
         </div>
@@ -88,7 +89,9 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
         <div class="grid">
             <?php while($row = mysqli_fetch_assoc($libros)): ?>
             <div class="book-card">
-                <div class="book-img">📚</div>
+                <div class="book-img">
+                    <i class="fa-solid fa-book" style="font-size:3rem; color:#cbd5e1;"></i>
+                </div>
                 <div class="book-body">
                     <span class="tag"><?php echo $row['categoria']; ?></span>
                     <h3 style="margin:10px 0; font-size:1.1rem;"><?php echo $row['titulo']; ?></h3>
@@ -102,7 +105,7 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
 
     <footer>
         <div class="container">
-            <h3>BiblioShare</h3>
+            <h3>Urban Canvas</h3>
             <p>Conectando mentes, compartiendo futuro.</p>
             <p style="font-size:0.8rem; margin-top:20px; opacity:0.5;">&copy; 2024 Urban Design Update</p>
         </div>

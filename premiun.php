@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <!DOCTYPE html>
 <html>
-<head><title>Premium</title><link rel="stylesheet" href="estilos.css"></head>
+<head><title>Premium</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="estilos.css"></head>
 <body>
     <nav class="navbar">
         <div class="logo">Biblio<span>Share</span></div>

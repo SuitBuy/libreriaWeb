@@ -1,25 +1,36 @@
 <?php
 session_start();
 include 'db.php';
-if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
+if (!isset($_SESSION['uid'])) {
+    header("Location: login.php");
+    exit;
+}
 $uid = $_SESSION['uid'];
 $mis_libros = mysqli_query($conn, "SELECT * FROM recursos WHERE usuario_id = $uid ORDER BY fecha_subida DESC");
 $total_vistas = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(vistas) as total FROM recursos WHERE usuario_id = $uid"))['total'];
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Mi Perfil</title><link rel="stylesheet" href="estilos.css"></head>
+
+<head>
+    <title>Mi Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
 <body>
     <nav class="navbar">
-        <div class="logo"><div class="logo-icon"></div>BiblioShare</div>
+        <div class="logo">
+            <div class="logo-icon"></div>BiblioShare
+        </div>
         <div class="nav-links"><a href="index.php">Inicio</a><a href="logout.php">Salir</a></div>
     </nav>
     <div class="container" style="margin-top:40px;">
         <div style="background:var(--primary-grad); color:white; padding:40px; border-radius:30px; text-align:center;">
             <h1>Hola, <?php echo $_SESSION['nombre']; ?></h1>
             <p style="opacity:0.9;">Rol: <?php echo strtoupper($_SESSION['rol']); ?></p>
-            
-            <?php if($_SESSION['rol'] == 'autor'): ?>
+
+            <?php if ($_SESSION['rol'] == 'autor'): ?>
                 <div class="stats-container">
                     <div class="stat-card">
                         <div class="stat-number"><?php echo mysqli_num_rows($mis_libros); ?></div>
@@ -33,10 +44,10 @@ $total_vistas = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(vistas) as to
             <?php endif; ?>
         </div>
 
-        <?php if($_SESSION['rol'] == 'autor'): ?>
+        <?php if ($_SESSION['rol'] == 'autor'): ?>
             <h2 class="section-title">Mis Obras Gestionadas</h2>
             <div class="grid">
-                <?php while($row = mysqli_fetch_assoc($mis_libros)): ?>
+                <?php while ($row = mysqli_fetch_assoc($mis_libros)): ?>
                     <div class="card">
                         <div class="card-body">
                             <span class="tag"><?php echo $row['categoria']; ?></span>
@@ -50,4 +61,5 @@ $total_vistas = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(vistas) as to
         <?php endif; ?>
     </div>
 </body>
+
 </html>

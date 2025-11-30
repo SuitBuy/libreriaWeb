@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['uid'])) {
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Subir Obra</title><link rel="stylesheet" href="estilos.css"></head>
+<head><title>Subir Obra</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="estilos.css"></head>
 <body style="background:#f1f5f9;">
     <nav class="navbar"><div class="logo">BiblioShare</div><a href="index.php">Cancelar</a></nav>
     <div class="auth-wrapper" style="max-width:600px;">
