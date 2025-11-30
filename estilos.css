@@ -65,7 +65,7 @@ body {
 }
 .nav-links a:hover { color: #0ea5e9; }
 
-/* Botón Login Verde (Como en la imagen) */
+/* Botón Login Verde */
 .btn-login {
     background: #84cc16; /* Verde lima sólido */
     color: white;
@@ -74,6 +74,10 @@ body {
     font-weight: 600;
     box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3);
     transition: transform 0.2s;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
 }
 .btn-login:hover { transform: translateY(-2px); }
 
@@ -93,24 +97,21 @@ body {
     color: white;
     overflow: hidden;
 }
-/* Overlay degradado elegante */
 .hero::after {
     content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
     background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
     z-index: 1;
 }
-/* Onda decorativa (Cyan/Verde) como en la imagen */
 .hero-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(120deg, rgba(79,172,254,0.8) 0%, rgba(0,0,0,0) 60%);
     z-index: 2;
 }
-
 .hero-content { position: relative; z-index: 3; max-width: 700px; padding: 20px; }
 .hero h1 { font-size: 3rem; margin-bottom: 10px; line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 .hero p { font-size: 1.2rem; opacity: 0.95; margin-bottom: 30px; }
 
-/* --- BUSCADOR FLOTANTE TIPO PÍLDORA --- */
+/* --- BUSCADOR FLOTANTE --- */
 .search-container {
     background: white;
     padding: 8px;
@@ -149,7 +150,7 @@ body {
 }
 .search-btn:hover { background: #65a30d; }
 
-/* --- CARDS DE COLECCIONES (VERDE, AZUL, BLANCO) --- */
+/* --- CARDS DE COLECCIONES --- */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
 .section-title { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; color: #334155; }
 
@@ -170,7 +171,6 @@ body {
 }
 .collection-card:hover { transform: translateY(-10px); }
 
-/* Variantes de colores según tu imagen */
 .col-green { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
 .col-blue { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
 .col-white { background: white; border: 1px solid #f1f5f9; }
@@ -211,9 +211,9 @@ body {
 }
 .btn-outline:hover { border-color: #0ea5e9; color: #0ea5e9; }
 
-/* --- FORMULARIOS --- */
+/* --- FORMULARIOS (LOGIN, REGISTRO, CONTACTO) --- */
 .auth-wrapper {
-    max-width: 420px; margin: 60px auto;
+    max-width: 450px; margin: 60px auto;
     background: white; padding: 40px;
     border-radius: var(--radius-xl);
     box-shadow: var(--card-shadow);
@@ -224,16 +224,55 @@ body {
     background: #f8fafc; border: none;
     border-radius: 12px; font-size: 1rem;
     outline: none; transition: 0.3s;
+    margin-bottom: 15px;
 }
 .input-field:focus { background: #fff; box-shadow: 0 0 0 2px #4facfe; }
+
+/* --- PLANES / PRICING (NUEVO) --- */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+.plan-card {
+    background: white;
+    padding: 40px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--card-shadow);
+    transition: 0.3s;
+    border: 1px solid #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.plan-card:hover { transform: translateY(-10px); }
+.plan-card.featured {
+    border: 2px solid #4facfe;
+    transform: scale(1.05);
+    z-index: 10;
+}
+.plan-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+.plan-card .price { 
+    font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0; 
+}
+.plan-card .price small { 
+    font-size: 1rem; color: #94a3b8; font-weight: 400; 
+}
+.plan-card p { color: #64748b; margin-bottom: 25px; }
+.plan-card button {
+    background: #84cc16; color: white;
+    padding: 12px 30px; border-radius: var(--radius-pill);
+    border: none; font-weight: 600; cursor: pointer;
+    transition: 0.3s; width: 100%;
+}
+.plan-card button:hover { opacity: 0.9; transform: translateY(-2px); }
 
 /* --- FOOTER --- */
 footer {
     background: #1e293b; color: #94a3b8;
     padding: 40px 0; margin-top: 80px; text-align: center;
 }
-
-/* Alertas */
 .alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 500; }
 .alert-error { background: #fee2e2; color: #b91c1c; }
 .alert-success { background: #dcfce7; color: #15803d; }
