@@ -2,9 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
-    /* Paleta inspirada en Urban Canvas */
-    --primary-grad: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* Azul Cyan */
-    --accent-grad: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%); /* Verde Lima */
+    /* Paleta Urban Canvas */
+    --primary-grad: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --text-dark: #1e293b;
     --text-gray: #64748b;
     --bg-light: #ffffff;
@@ -24,7 +23,7 @@ body {
     line-height: 1.6;
 }
 
-/* --- NAVBAR ESTILO URBAN --- */
+/* --- NAVBAR --- */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -44,15 +43,13 @@ body {
     align-items: center;
     gap: 10px;
     text-transform: uppercase;
-    letter-spacing: -0.5px;
 }
 
-/* Icono simulado del logo Urban Canvas */
 .logo-icon {
     width: 35px; height: 35px;
     background: var(--primary-grad);
     border-radius: 8px;
-    border-bottom-right-radius: 0; /* Detalle estético */
+    border-bottom-right-radius: 0;
 }
 
 .nav-links { display: flex; align-items: center; gap: 30px; }
@@ -60,148 +57,25 @@ body {
     text-decoration: none;
     color: var(--text-gray);
     font-weight: 500;
-    font-size: 0.95rem;
     transition: 0.3s;
 }
 .nav-links a:hover { color: #0ea5e9; }
 
-/* Botón Login Verde */
+/* Botones */
 .btn-login {
-    background: #84cc16; /* Verde lima sólido */
+    background: #84cc16;
     color: white;
     padding: 10px 28px;
     border-radius: var(--radius-pill);
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3);
-    transition: transform 0.2s;
     border: none;
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
+    transition: 0.2s;
 }
-.btn-login:hover { transform: translateY(-2px); }
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3); }
 
-/* --- HERO SECTION REDONDEADA --- */
-.hero-wrapper { padding: 10px 5%; margin-bottom: 40px; }
-.hero {
-    background: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
-    background-size: cover;
-    background-position: center;
-    height: 450px;
-    border-radius: var(--radius-xl);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    overflow: hidden;
-}
-.hero::after {
-    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
-    z-index: 1;
-}
-.hero-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(120deg, rgba(79,172,254,0.8) 0%, rgba(0,0,0,0) 60%);
-    z-index: 2;
-}
-.hero-content { position: relative; z-index: 3; max-width: 700px; padding: 20px; }
-.hero h1 { font-size: 3rem; margin-bottom: 10px; line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.hero p { font-size: 1.2rem; opacity: 0.95; margin-bottom: 30px; }
-
-/* --- BUSCADOR FLOTANTE --- */
-.search-container {
-    background: white;
-    padding: 8px;
-    border-radius: var(--radius-pill);
-    display: flex;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-}
-.search-input {
-    flex-grow: 1;
-    border: none;
-    padding: 15px 25px;
-    font-size: 1rem;
-    border-radius: var(--radius-pill);
-    outline: none;
-}
-.search-select {
-    border: none;
-    border-left: 1px solid #eee;
-    padding: 0 20px;
-    color: var(--text-gray);
-    outline: none;
-    background: transparent;
-}
-.search-btn {
-    background: #84cc16;
-    color: white;
-    border: none;
-    padding: 12px 35px;
-    border-radius: var(--radius-pill);
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.search-btn:hover { background: #65a30d; }
-
-/* --- CARDS DE COLECCIONES --- */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
-.section-title { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; color: #334155; }
-
-.collections-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 60px;
-}
-.collection-card {
-    padding: 40px 20px;
-    border-radius: var(--radius-md);
-    text-align: center;
-    transition: transform 0.3s;
-    cursor: pointer;
-    color: #1e293b;
-    box-shadow: var(--card-shadow);
-}
-.collection-card:hover { transform: translateY(-10px); }
-
-.col-green { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-.col-blue { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
-.col-white { background: white; border: 1px solid #f1f5f9; }
-
-.collection-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
-.collection-title { font-weight: 700; font-size: 1.1rem; }
-
-/* --- GRID DE LIBROS --- */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-.book-card {
-    background: white;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: 0.3s;
-    border: 1px solid #f8fafc;
-    display: flex; flex-direction: column;
-}
-.book-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
-.book-img {
-    height: 180px;
-    background: #f1f5f9;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3rem; color: #cbd5e1;
-}
-.book-body { padding: 25px; flex-grow: 1; }
-.tag { 
-    background: #e0f2fe; color: #0284c7; 
-    padding: 5px 12px; border-radius: 8px; 
-    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-}
 .btn-outline {
     display: block; width: 100%; text-align: center;
     margin-top: 15px; padding: 10px 0;
@@ -211,98 +85,84 @@ body {
 }
 .btn-outline:hover { border-color: #0ea5e9; color: #0ea5e9; }
 
-/* --- FORMULARIOS (LOGIN, REGISTRO, CONTACTO) --- */
-.auth-wrapper {
-    max-width: 450px; margin: 60px auto;
-    background: white; padding: 40px;
+/* --- HERO & SECTIONS --- */
+.hero-wrapper { padding: 10px 5%; margin-bottom: 40px; }
+.hero {
+    background: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 450px;
     border-radius: var(--radius-xl);
-    box-shadow: var(--card-shadow);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; color: white; overflow: hidden;
 }
-.input-group { margin-bottom: 20px; }
-.input-field {
-    width: 100%; padding: 15px;
-    background: #f8fafc; border: none;
-    border-radius: 12px; font-size: 1rem;
-    outline: none; transition: 0.3s;
-    margin-bottom: 15px;
+.hero-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(120deg, rgba(79,172,254,0.8) 0%, rgba(0,0,0,0) 60%);
+    z-index: 2;
 }
-.input-field:focus { background: #fff; box-shadow: 0 0 0 2px #4facfe; }
+.hero-content { position: relative; z-index: 3; max-width: 700px; padding: 20px; }
+.hero h1 { font-size: 3rem; margin-bottom: 10px; line-height: 1.1; }
 
-/* --- PLANES / PRICING (NUEVO) --- */
-.pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
+.search-container {
+    background: white; padding: 8px; border-radius: var(--radius-pill);
+    display: flex; width: 100%; max-width: 650px; margin: 0 auto;
 }
-.plan-card {
-    background: white;
-    padding: 40px;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--card-shadow);
-    transition: 0.3s;
-    border: 1px solid #f8fafc;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.plan-card:hover { transform: translateY(-10px); }
-.plan-card.featured {
-    border: 2px solid #4facfe;
-    transform: scale(1.05);
-    z-index: 10;
-}
-.plan-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
-.plan-card .price { 
-    font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0; 
-}
-.plan-card .price small { 
-    font-size: 1rem; color: #94a3b8; font-weight: 400; 
-}
-.plan-card p { color: #64748b; margin-bottom: 25px; }
-.plan-card button {
-    background: #84cc16; color: white;
-    padding: 12px 30px; border-radius: var(--radius-pill);
-    border: none; font-weight: 600; cursor: pointer;
-    transition: 0.3s; width: 100%;
-}
-.plan-card button:hover { opacity: 0.9; transform: translateY(-2px); }
+.search-input { flex-grow: 1; border: none; padding: 15px 25px; outline: none; border-radius: var(--radius-pill); }
+.search-select { border: none; padding: 0 20px; border-left: 1px solid #eee; background: transparent; }
+.search-btn { background: #84cc16; color: white; border: none; padding: 12px 35px; border-radius: var(--radius-pill); cursor: pointer; }
 
-/* --- FOOTER --- */
-footer {
-    background: #1e293b; color: #94a3b8;
-    padding: 40px 0; margin-top: 80px; text-align: center;
+/* --- CARDS & GRID --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+.section-title { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; color: #334155; }
+
+.collections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 60px; }
+.collection-card { padding: 40px 20px; border-radius: var(--radius-md); text-align: center; cursor: pointer; color: #1e293b; box-shadow: var(--card-shadow); }
+.col-green { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
+.col-blue { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+.col-white { background: white; border: 1px solid #f1f5f9; }
+.collection-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+.book-card {
+    background: white; border-radius: var(--radius-md);
+    overflow: hidden; box-shadow: var(--card-shadow);
+    transition: 0.3s; border: 1px solid #f8fafc;
+    display: flex; flex-direction: column; position: relative;
 }
-.alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 500; }
-.alert-error { background: #fee2e2; color: #b91c1c; }
-.alert-success { background: #dcfce7; color: #15803d; }
+.book-card:hover { transform: translateY(-5px); }
+.book-img { height: 180px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+.book-body { padding: 25px; flex-grow: 1; }
+.tag { background: #e0f2fe; color: #0284c7; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
 
-/* ... (todo tu CSS anterior) ... */
+/* --- AUTH & FORMS --- */
+.auth-wrapper { max-width: 450px; margin: 60px auto; background: white; padding: 40px; border-radius: var(--radius-xl); box-shadow: var(--card-shadow); }
+.input-field { width: 100%; padding: 15px; background: #f8fafc; border: none; border-radius: 12px; margin-bottom: 15px; outline: none; }
 
-/* --- BLOQUEO DE CONTENIDO (BLUR) --- */
+/* --- EFECTO BLUR & SEGURIDAD --- */
 .blur-content {
-    filter: blur(5px);
-    pointer-events: none; /* Evita clicks */
-    user-select: none;    /* Evita seleccionar texto */
-    opacity: 0.6;
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.5;
 }
-
 .locked-overlay {
-    position: absolute;
-    top: 50%; left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 10;
-    width: 80%;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px; border-radius: 15px;
+    text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 10; width: 85%;
 }
 
-.status-badge {
-    padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: white;
-}
+/* --- BADGES ADMIN --- */
+.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; color: white; font-weight: bold; text-transform: uppercase; }
 .st-pendiente { background: #f59e0b; }
 .st-aprobado { background: #10b981; }
-.st-rechazado { background: #ef4444; }
+
+/* --- FOOTER --- */
+footer { background: #1e293b; color: #94a3b8; padding: 40px 0; margin-top: 80px; text-align: center; }
+.alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+.alert-error { background: #fee2e2; color: #b91c1c; }
+.alert-success { background: #dcfce7; color: #15803d; }
