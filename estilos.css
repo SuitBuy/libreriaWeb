@@ -276,3 +276,33 @@ footer {
 .alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 500; }
 .alert-error { background: #fee2e2; color: #b91c1c; }
 .alert-success { background: #dcfce7; color: #15803d; }
+
+/* ... (todo tu CSS anterior) ... */
+
+/* --- BLOQUEO DE CONTENIDO (BLUR) --- */
+.blur-content {
+    filter: blur(5px);
+    pointer-events: none; /* Evita clicks */
+    user-select: none;    /* Evita seleccionar texto */
+    opacity: 0.6;
+}
+
+.locked-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 10;
+    width: 80%;
+}
+
+.status-badge {
+    padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: white;
+}
+.st-pendiente { background: #f59e0b; }
+.st-aprobado { background: #10b981; }
+.st-rechazado { background: #ef4444; }
