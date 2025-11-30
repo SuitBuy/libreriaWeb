@@ -34,7 +34,7 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
         
         <div style="background:white; border-radius:30px; padding:40px; box-shadow:var(--card-shadow); display:flex; gap:40px; flex-wrap:wrap;">
             
-            <div style="flex:2; background:#f8fafc; border-radius:20px; display:flex; align-items:center; justify-content:center; min-height:600px; padding:20px; border:1px solid #e2e8f0;">
+            <div style="flex:2; background:#f8fafc; border-radius:20px; display:flex; align-items:center; justify-content:center; min-height:1200px; padding:20px; border:1px solid #e2e8f0;">
                 <?php
                     $archivo = $row['archivo_pdf'];
                     $ext = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
