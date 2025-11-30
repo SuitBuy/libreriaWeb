@@ -1,117 +1,51 @@
 <?php
 session_start();
 include 'db.php';
-
-$where = "1";
-if (isset($_GET['q']) && $_GET['q'] != '') {
-    $q = mysqli_real_escape_string($conn, $_GET['q']);
-    $where .= " AND (titulo LIKE '%$q%' OR autor_nombre LIKE '%$q%')";
+$error = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password'];
+    $res = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$email'");
+    if ($row = mysqli_fetch_assoc($res)) {
+        if (password_verify($password, $row['password'])) {
+            $_SESSION['uid'] = $row['id'];
+            $_SESSION['nombre'] = $row['nombre'];
+            $_SESSION['rol'] = $row['rol'];
+            header("Location: index.php");
+            exit;
+        }
+    }
+    $error = "Datos incorrectos.";
 }
-if (isset($_GET['cat']) && $_GET['cat'] != 'Todas') {
-    $c = mysqli_real_escape_string($conn, $_GET['cat']);
-    $where .= " AND categoria = '$c'";
-}
-
-$libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id DESC");
 ?>
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>BiblioShare - Urban Style</title>
-    <link rel="stylesheet" href="estilos.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="logo">
-            <div class="logo-icon"></div> BiblioShare
-        </div>
-        <div class="nav-links">
-            <a href="index.php">Explorar</a>
-            <a href="premium.php">Comunidad</a>
-            <a href="contacto.php">Soporte</a>
-            <?php if(isset($_SESSION['uid'])): ?>
-                <a href="perfil.php">Mi Biblioteca</a>
-                <a href="logout.php" style="color:#ef4444;">Salir</a>
-            <?php else: ?>
-                <a href="login.php" class="btn-login">Login</a>
-            <?php endif; ?>
-        </div>
+<html>
+<head><title>Login</title><link rel="stylesheet" href="estilos.css"></head>
+<body style="background:#f1f5f9;"> <nav class="navbar">
+        <div class="logo"><div class="logo-icon"></div>BiblioShare</div>
+        <a href="index.php" style="text-decoration:none; color:#334155;">Volver</a>
     </nav>
-
-    <div class="hero-wrapper">
-        <div class="hero">
-            <div class="hero-content">
-                <h1>Desbloquea tu Potencial.<br>Sumérgete en el Conocimiento.</h1>
-                <p>Encuentra tu próxima gran lectura, comparte ideas y aprende de forma colaborativa.</p>
-                
-                <form method="GET" class="search-bar">
-                    <input type="text" name="q" placeholder="Buscar libros, tesis, autores...">
-                    <select name="cat">
-                        <option>Todas</option>
-                        <option>Ciencias</option>
-                        <option>Arte</option>
-                        <option>Historia</option>
-                        <option>Ingeniería</option>
-                    </select>
-                    <button type="submit" class="search-btn">Buscar</button>
-                </form>
+    
+    <div class="auth-wrapper">
+        <h2 style="text-align:center; margin-bottom:10px;">Bienvenido</h2>
+        <p style="text-align:center; color:#64748b; margin-bottom:30px;">Ingresa a tu cuenta para continuar</p>
+        
+        <?php if($error) echo "<div class='alert alert-error'>$error</div>"; ?>
+        <?php if(isset($_GET['success'])) echo "<div class='alert alert-success'>¡Cuenta creada!</div>"; ?>
+        
+        <form method="POST">
+            <div class="input-group">
+                <input type="email" name="email" class="input-field" placeholder="Correo electrónico" required>
             </div>
-        </div>
+            <div class="input-group">
+                <input type="password" name="password" class="input-field" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="btn-login" style="width:100%; border:none; cursor:pointer; font-size:1rem;">Iniciar Sesión</button>
+        </form>
+        
+        <p style="text-align:center; margin-top:20px; font-size:0.9rem;">
+            ¿Nuevo aquí? <a href="registro.php" style="color:#0ea5e9; font-weight:600;">Regístrate gratis</a>
+        </p>
     </div>
-
-    <div class="container">
-        <?php if(!isset($_GET['q'])): ?>
-        <h2 class="section-title">Colecciones Destacadas</h2>
-        <div class="grid">
-            <div class="card" onclick="window.location='index.php?cat=Ciencias'" style="cursor:pointer;">
-                <div class="card-img tech">🔬</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Ciencia & Tecnología</h3>
-                    <p>Explora el futuro hoy.</p>
-                </div>
-            </div>
-            <div class="card" onclick="window.location='index.php?cat=Arte'" style="cursor:pointer;">
-                <div class="card-img art">🎨</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Artes Creativas</h3>
-                    <p>Inspiración sin límites.</p>
-                </div>
-            </div>
-            <div class="card" onclick="window.location='index.php?cat=Historia'" style="cursor:pointer;">
-                <div class="card-img">🏛️</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Historia & Cultura</h3>
-                    <p>Aprende del pasado.</p>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="section-title">Resultados de Búsqueda</h2>
-            <?php if(isset($_SESSION['uid']) && $_SESSION['rol'] == 'autor'): ?>
-                <a href="upload.php" class="btn-login" style="background:var(--primary-grad); color:white;">+ Subir Nuevo</a>
-            <?php endif; ?>
-        </div>
-
-        <div class="grid">
-            <?php while($row = mysqli_fetch_assoc($libros)): ?>
-            <div class="card">
-                <div class="card-body">
-                    <span class="tag"><?php echo $row['categoria']; ?></span>
-                    <h3><?php echo $row['titulo']; ?></h3>
-                    <p>Por: <?php echo $row['autor_nombre']; ?></p>
-                    <p style="font-size:0.8rem; color:#94a3b8; margin-top:10px;">
-                        <?php echo substr($row['descripcion'], 0, 80); ?>...
-                    </p>
-                    <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-card">Leer Ahora →</a>
-                </div>
-            </div>
-            <?php endwhile; ?>
-        </div>
-    </div>
-
-    <br><br>
 </body>
 </html>

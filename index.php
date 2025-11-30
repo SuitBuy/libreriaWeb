@@ -18,20 +18,20 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>BiblioShare - Urban Style</title>
+    <title>BiblioShare - Urban Design</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">
-            <div class="logo-icon"></div> BiblioShare
+            <div class="logo-icon"></div> <span style="margin-left: 10px;">BiblioShare</span>
         </div>
         <div class="nav-links">
-            <a href="index.php">Explorar</a>
-            <a href="premium.php">Comunidad</a>
-            <a href="contacto.php">Soporte</a>
+            <a href="index.php">Inicio</a>
+            <a href="premium.php">Planes</a>
+            <a href="contacto.php">Ayuda</a>
             <?php if(isset($_SESSION['uid'])): ?>
-                <a href="perfil.php">Mi Biblioteca</a>
+                <a href="perfil.php" style="color:#0f172a; font-weight:600;">Mi Perfil</a>
                 <a href="logout.php" style="color:#ef4444;">Salir</a>
             <?php else: ?>
                 <a href="login.php" class="btn-login">Login</a>
@@ -41,18 +41,17 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
 
     <div class="hero-wrapper">
         <div class="hero">
-            <div class="hero-content">
-                <h1>Desbloquea tu Potencial.<br>Sumérgete en el Conocimiento.</h1>
-                <p>Encuentra tu próxima gran lectura, comparte ideas y aprende de forma colaborativa.</p>
+            <div class="hero-overlay"></div> <div class="hero-content">
+                <h1>Desbloquea tu potencial.<br>Comparte conocimiento.</h1>
+                <p>Únete a la comunidad académica más colaborativa.</p>
                 
-                <form method="GET" class="search-bar">
-                    <input type="text" name="q" placeholder="Buscar libros, tesis, autores...">
-                    <select name="cat">
+                <form method="GET" class="search-container">
+                    <input type="text" name="q" class="search-input" placeholder="Buscar libros, autores...">
+                    <select name="cat" class="search-select">
                         <option>Todas</option>
                         <option>Ciencias</option>
                         <option>Arte</option>
                         <option>Historia</option>
-                        <option>Ingeniería</option>
                     </select>
                     <button type="submit" class="search-btn">Buscar</button>
                 </form>
@@ -63,55 +62,50 @@ $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id D
     <div class="container">
         <?php if(!isset($_GET['q'])): ?>
         <h2 class="section-title">Colecciones Destacadas</h2>
-        <div class="grid">
-            <div class="card" onclick="window.location='index.php?cat=Ciencias'" style="cursor:pointer;">
-                <div class="card-img tech">🔬</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Ciencia & Tecnología</h3>
-                    <p>Explora el futuro hoy.</p>
-                </div>
+        <div class="collections-grid">
+            <div class="collection-card col-green" onclick="window.location='index.php?cat=Ciencias'">
+                <span class="collection-icon">🔬</span>
+                <div class="collection-title">Ciencia & Tec</div>
             </div>
-            <div class="card" onclick="window.location='index.php?cat=Arte'" style="cursor:pointer;">
-                <div class="card-img art">🎨</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Artes Creativas</h3>
-                    <p>Inspiración sin límites.</p>
-                </div>
+            <div class="collection-card col-blue" onclick="window.location='index.php?cat=Arte'">
+                <span class="collection-icon">🎨</span>
+                <div class="collection-title">Artes Creativas</div>
             </div>
-            <div class="card" onclick="window.location='index.php?cat=Historia'" style="cursor:pointer;">
-                <div class="card-img">🏛️</div>
-                <div class="card-body" style="text-align:center;">
-                    <h3>Historia & Cultura</h3>
-                    <p>Aprende del pasado.</p>
-                </div>
+            <div class="collection-card col-white" onclick="window.location='index.php?cat=Historia'">
+                <span class="collection-icon">🏛️</span>
+                <div class="collection-title">Historia & Cultura</div>
             </div>
         </div>
         <?php endif; ?>
 
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="section-title">Resultados de Búsqueda</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 class="section-title">Explorar Biblioteca</h2>
             <?php if(isset($_SESSION['uid']) && $_SESSION['rol'] == 'autor'): ?>
-                <a href="upload.php" class="btn-login" style="background:var(--primary-grad); color:white;">+ Subir Nuevo</a>
+                <a href="upload.php" class="btn-login" style="background:#0ea5e9; text-decoration:none;">+ Subir Libro</a>
             <?php endif; ?>
         </div>
 
         <div class="grid">
             <?php while($row = mysqli_fetch_assoc($libros)): ?>
-            <div class="card">
-                <div class="card-body">
+            <div class="book-card">
+                <div class="book-img">📚</div>
+                <div class="book-body">
                     <span class="tag"><?php echo $row['categoria']; ?></span>
-                    <h3><?php echo $row['titulo']; ?></h3>
-                    <p>Por: <?php echo $row['autor_nombre']; ?></p>
-                    <p style="font-size:0.8rem; color:#94a3b8; margin-top:10px;">
-                        <?php echo substr($row['descripcion'], 0, 80); ?>...
-                    </p>
-                    <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-card">Leer Ahora →</a>
+                    <h3 style="margin:10px 0; font-size:1.1rem;"><?php echo $row['titulo']; ?></h3>
+                    <p style="color:#64748b; font-size:0.9rem;">Por: <?php echo $row['autor_nombre']; ?></p>
+                    <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline">Ver Detalles</a>
                 </div>
             </div>
             <?php endwhile; ?>
         </div>
     </div>
 
-    <br><br>
+    <footer>
+        <div class="container">
+            <h3>BiblioShare</h3>
+            <p>Conectando mentes, compartiendo futuro.</p>
+            <p style="font-size:0.8rem; margin-top:20px; opacity:0.5;">&copy; 2024 Urban Design Update</p>
+        </div>
+    </footer>
 </body>
 </html>
