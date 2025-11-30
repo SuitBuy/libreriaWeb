@@ -2,13 +2,31 @@
 session_start();
 include 'db.php';
 
+// Validaciones
 if (!isset($_GET['id'])) { header("Location: index.php"); exit; }
 if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
 
 $id = mysqli_real_escape_string($conn, $_GET['id']);
-mysqli_query($conn, "UPDATE recursos SET vistas = vistas + 1 WHERE id = $id");
+
+// --- SOLUCIÓN AL BUG DE VISITAS ---
+// 1. Si no existe el "historial de vistos" en la sesión, lo creamos
+if (!isset($_SESSION['recursos_vistos'])) {
+    $_SESSION['recursos_vistos'] = array();
+}
+
+// 2. Verificamos si este ID específico ya fue visto en esta sesión
+if (!in_array($id, $_SESSION['recursos_vistos'])) {
+    // Si NO fue visto, sumamos 1 a la base de datos
+    mysqli_query($conn, "UPDATE recursos SET vistas = vistas + 1 WHERE id = $id");
+    
+    // Y lo agregamos a la lista de vistos para que no sume de nuevo al recargar
+    $_SESSION['recursos_vistos'][] = $id;
+}
+// ----------------------------------
+
 $row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM recursos WHERE id=$id"));
 
+// Comentarios
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $com = mysqli_real_escape_string($conn, $_POST['comentario']);
     $val = (int)$_POST['valoracion'];
@@ -48,7 +66,6 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
                               </div>";
                     } 
                     elseif ($ext == 'pdf') {
-                        // PDF en modo limpio
                         $pdf_limpio = $archivo . "#toolbar=0&navpanes=0&scrollbar=0&view=FitH";
                         echo "<iframe src='$pdf_limpio' width='100%' height='100%' style='border:none; min-height:850px;'></iframe>";
                     } 
