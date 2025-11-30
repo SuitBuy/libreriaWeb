@@ -16,7 +16,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 'Todas') {
 
 $libros = mysqli_query($conn, "SELECT * FROM recursos WHERE $where ORDER BY id DESC");
 $isLoggedIn = isset($_SESSION['uid']);
-$isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
+$isAdmin = isset($_SESSION['rol']) && isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,8 +26,44 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
     <style>
-        /* Ajuste para que el embed no capture el scroll de la página */
-        embed { pointer-events: none; } 
+        /* Estilos específicos para las miniaturas */
+        .preview-container {
+            width: 100%;
+            height: 250px; /* Altura fija para uniformidad */
+            background-color: #f1f5f9;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+        
+        /* Imagen ajustada perfectamente */
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cubre todo el espacio sin deformarse */
+            display: block;
+        }
+
+        /* PDF incrustado sin barras de herramientas */
+        .preview-pdf {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none; /* Evita que el usuario interactúe con el PDF en la miniatura */
+            overflow: hidden;
+        }
+
+        /* Capa transparente sobre el PDF para permitir click en la tarjeta */
+        .click-shield {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5;
+            background: transparent;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -83,35 +119,44 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
             <div class="book-card" style="position:relative;">
                 
                 <div class="<?php echo !$isLoggedIn ? 'blur-content' : ''; ?>">
-                    <div class="book-img" style="overflow:hidden; padding:0; height:220px; background:#f1f5f9;">
+                    
+                    <div class="preview-container">
                         <?php 
+                        // Codificamos caracteres especiales en la ruta para evitar errores con espacios
+                        $ruta_archivo = htmlspecialchars($row['archivo_pdf']);
                         $ext = strtolower(pathinfo($row['archivo_pdf'], PATHINFO_EXTENSION));
                         
-                        // OPCIÓN 1: Es una IMAGEN (JPG, PNG, etc)
+                        // --- CASO 1: IMAGENES (JPG, PNG, ETC) ---
                         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                            echo "<img src='" . $row['archivo_pdf'] . "' style='width:100%; height:100%; object-fit:cover;'>";
+                            echo "<img src='$ruta_archivo' class='preview-img' alt='Vista previa'>";
                         } 
-                        // OPCIÓN 2: Es un PDF (¡Aquí está el cambio!)
+                        // --- CASO 2: PDF (Con truco para ocultar menús) ---
                         elseif ($ext == 'pdf') {
-                            // Usamos embed ocultando toolbar, scrollbar y paneles para que parezca una imagen
-                            echo "<embed src='" . $row['archivo_pdf'] . "#toolbar=0&navpanes=0&scrollbar=0&view=Fit' type='application/pdf' style='width:100%; height:100%; border:none; pointer-events:none; overflow:hidden;'>";
+                            // #toolbar=0 oculta la barra superior
+                            // #scrollbar=0 oculta las barras de desplazamiento
+                            // #view=Fit hace que se ajuste al tamaño
+                            echo "<iframe src='$ruta_archivo#toolbar=0&navpanes=0&scrollbar=0&view=Fit' class='preview-pdf'></iframe>";
+                            // Capa invisible para evitar que el iframe capture el click
+                            echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
                         }
-                        // OPCIÓN 3: Es WORD u otro (Icono)
+                        // --- CASO 3: WORD Y OTROS (Icono Grande) ---
                         else {
                             $icon = "fa-book";
-                            $color = "#cbd5e1";
-                            if($ext == 'doc' || $ext == 'docx') { $icon = "fa-file-word"; $color = "#2563eb"; }
+                            $color = "#94a3b8"; // Gris por defecto
                             
-                            echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; width:100%;'>";
-                            echo "<i class='fa-solid $icon' style='font-size:4rem; color:$color;'></i>";
-                            echo "</div>";
+                            if($ext == 'doc' || $ext == 'docx') { 
+                                $icon = "fa-file-word"; 
+                                $color = "#2563eb"; // Azul Word
+                            }
+                            
+                            echo "<i class='fa-solid $icon' style='font-size:5rem; color:$color;'></i>";
                         }
                         ?>
                     </div>
                     
                     <div class="book-body">
                         <span class="tag"><?php echo $row['categoria']; ?></span>
-                        <h3 style="margin:10px 0; font-size:1.1rem;"><?php echo $row['titulo']; ?></h3>
+                        <h3 style="margin:10px 0; font-size:1.1rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo $row['titulo']; ?></h3>
                         <p style="color:#64748b; font-size:0.9rem;">Por: <?php echo $row['autor_nombre']; ?></p>
                         <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline">Ver Detalles</a>
                     </div>
