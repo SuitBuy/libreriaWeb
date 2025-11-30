@@ -3,6 +3,10 @@ session_start();
 include 'db.php';
 
 $id = $_GET['id'];
+// CONTADOR DE VISTAS (Nuevo)
+mysqli_query($conn, "UPDATE recursos SET vistas = vistas + 1 WHERE id = $id");
+// ... resto del código ...
+$id = $_GET['id'];
 $row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM recursos WHERE id=$id"));
 
 // Procesar comentario
