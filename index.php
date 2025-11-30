@@ -25,6 +25,10 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
     <title>Urban Canvas - Biblioteca</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        /* Ajuste para que el embed no capture el scroll de la página */
+        embed { pointer-events: none; } 
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -79,23 +83,27 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
             <div class="book-card" style="position:relative;">
                 
                 <div class="<?php echo !$isLoggedIn ? 'blur-content' : ''; ?>">
-                    <div class="book-img" style="overflow:hidden; padding:0;">
+                    <div class="book-img" style="overflow:hidden; padding:0; height:220px; background:#f1f5f9;">
                         <?php 
                         $ext = strtolower(pathinfo($row['archivo_pdf'], PATHINFO_EXTENSION));
                         
-                        // Si es imagen, la mostramos completa
+                        // OPCIÓN 1: Es una IMAGEN (JPG, PNG, etc)
                         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                             echo "<img src='" . $row['archivo_pdf'] . "' style='width:100%; height:100%; object-fit:cover;'>";
                         } 
-                        // Si es otro archivo, mostramos el icono correspondiente
+                        // OPCIÓN 2: Es un PDF (¡Aquí está el cambio!)
+                        elseif ($ext == 'pdf') {
+                            // Usamos embed ocultando toolbar, scrollbar y paneles para que parezca una imagen
+                            echo "<embed src='" . $row['archivo_pdf'] . "#toolbar=0&navpanes=0&scrollbar=0&view=Fit' type='application/pdf' style='width:100%; height:100%; border:none; pointer-events:none; overflow:hidden;'>";
+                        }
+                        // OPCIÓN 3: Es WORD u otro (Icono)
                         else {
                             $icon = "fa-book";
                             $color = "#cbd5e1";
                             if($ext == 'doc' || $ext == 'docx') { $icon = "fa-file-word"; $color = "#2563eb"; }
-                            if($ext == 'pdf') { $icon = "fa-file-pdf"; $color = "#ef4444"; }
                             
-                            echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; width:100%; background:#f1f5f9;'>";
-                            echo "<i class='fa-solid $icon' style='font-size:3.5rem; color:$color;'></i>";
+                            echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; width:100%;'>";
+                            echo "<i class='fa-solid $icon' style='font-size:4rem; color:$color;'></i>";
                             echo "</div>";
                         }
                         ?>

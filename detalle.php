@@ -23,6 +23,10 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
     <title><?php echo $row['titulo']; ?> - Urban Canvas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        /* Estilo para quitar el borde gris por defecto de los iframes */
+        iframe { display: block; background: #fff; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -34,28 +38,38 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
         
         <div style="background:white; border-radius:30px; padding:40px; box-shadow:var(--card-shadow); display:flex; gap:40px; flex-wrap:wrap;">
             
-            <div style="flex:2; background:#f8fafc; border-radius:20px; display:flex; align-items:center; justify-content:center; min-height:1200px; padding:20px; border:1px solid #e2e8f0;">
+            <div style="flex:2; border-radius:20px; overflow:hidden; border:1px solid #e2e8f0; min-height:850px; background:white;">
                 <?php
                     $archivo = $row['archivo_pdf'];
                     $ext = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
 
                     if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                        // Imagen grande
-                        echo "<img src='$archivo' style='width:100%; height:auto; max-height:750px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit:contain;'>";
+                        // Imagen: Se muestra limpia y centrada
+                        echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; background:#f8fafc;'>
+                                <img src='$archivo' style='max-width:100%; max-height:850px; object-fit:contain;'>
+                              </div>";
                     } 
                     elseif ($ext == 'pdf') {
-                        // Visor PDF grande
-                        echo "<embed src='$archivo' type='application/pdf' width='100%' height='750px' style='border-radius:10px; border:none;'>";
+                        // PDF: TRUCO PARA LIMPIEZA TOTAL
+                        // #toolbar=0 -> Quita la barra de arriba
+                        // #navpanes=0 -> Quita la barra lateral de miniaturas
+                        // #scrollbar=0 -> Intenta ocultar barras de scroll del navegador
+                        // #view=FitH -> Ajusta al ancho para que se lea bien
+                        $pdf_limpio = $archivo . "#toolbar=0&navpanes=0&scrollbar=0&view=FitH";
+                        
+                        echo "<iframe src='$pdf_limpio' width='100%' height='850px' style='border:none;'></iframe>";
                     } 
                     elseif (in_array($ext, ['doc', 'docx'])) {
-                        echo "<div style='text-align:center; color:#2563eb;'>
+                        echo "<div style='display:flex; flex-direction:column; align-items:center; justify-content:center; height:850px; background:#f8fafc; color:#2563eb;'>
                                 <i class='fa-solid fa-file-word' style='font-size:8rem; margin-bottom:20px;'></i>
-                                <h3 style='color:#1e293b;'>Archivo de Word</h3>
-                                <p style='color:#64748b;'>Vista previa no disponible en navegador.</p>
+                                <h3 style='color:#1e293b;'>Vista previa Word no disponible</h3>
+                                <p style='color:#64748b;'>Usa el botón de descarga.</p>
                               </div>";
                     } 
                     else {
-                        echo "<i class='fa-regular fa-file' style='font-size:8rem; color:#cbd5e1;'></i>";
+                        echo "<div style='display:flex; align-items:center; justify-content:center; height:850px; background:#f8fafc;'>
+                                <i class='fa-regular fa-file' style='font-size:8rem; color:#cbd5e1;'></i>
+                              </div>";
                     }
                 ?>
             </div>
