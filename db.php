@@ -23,7 +23,7 @@ $conn = mysqli_connect($host, $user, $password, $dbname, $port);
 
 // 4. Verificar errores
 if (!$conn) {
-    die("Error de conexión fatal: " . mysqli_connect_error());
+    die("Error de conexión: " . mysqli_connect_error());
 }
 
 // 5. Configurar caracteres

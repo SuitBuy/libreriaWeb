@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['uid'])) {
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
 
-    // Manejo de archivo
+    // Asegurar nombre único
     $nombreArchivo = time() . "_" . basename($_FILES["archivo"]["name"]);
     $ruta = "uploads/" . $nombreArchivo;
 
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['uid'])) {
         mysqli_query($conn, $sql);
         header("Location: index.php");
     } else {
-        echo "Error al subir archivo.";
+        echo "<script>alert('Error al subir el archivo.'); window.history.back();</script>";
     }
 } else {
     header("Location: login.php");

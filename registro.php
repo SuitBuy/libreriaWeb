@@ -14,20 +14,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html>
-<head><link rel="stylesheet" href="estilos.css"></head>
+<head><title>Registro</title><link rel="stylesheet" href="estilos.css"></head>
 <body>
     <div class="auth-box">
-        <h2>Registro</h2>
+        <h2>Crear Cuenta</h2>
         <?php if($msg) echo "<div class='alert error'>$msg</div>"; ?>
         <form method="POST">
-            <label>Nombre</label><input type="text" name="nombre" required>
+            <label>Nombre Completo</label><input type="text" name="nombre" required>
             <label>Email</label><input type="email" name="email" required>
             <label>Contraseña</label><input type="password" name="password" required>
             <label>Soy:</label>
-            <select name="rol"><option value="estudiante">Estudiante</option><option value="autor">Autor</option></select>
+            <select name="rol">
+                <option value="estudiante">Estudiante / Lector</option>
+                <option value="autor">Autor / Investigador</option>
+            </select>
             <button type="submit">Registrarse</button>
         </form>
         <p style="text-align:center;"><a href="login.php">¿Ya tienes cuenta?</a></p>
     </div>
 </body>
-</html>
+</html> 
