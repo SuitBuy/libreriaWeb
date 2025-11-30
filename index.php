@@ -79,14 +79,28 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
             <div class="book-card" style="position:relative;">
                 
                 <div class="<?php echo !$isLoggedIn ? 'blur-content' : ''; ?>">
-                    <div class="book-img">
+                    <div class="book-img" style="overflow:hidden; padding:0;">
                         <?php 
-                        $icon = "fa-book";
-                        if($row['tipo_archivo'] == 'doc' || $row['tipo_archivo'] == 'docx') $icon = "fa-file-word";
-                        if($row['tipo_archivo'] == 'jpg' || $row['tipo_archivo'] == 'png') $icon = "fa-image";
+                        $ext = strtolower(pathinfo($row['archivo_pdf'], PATHINFO_EXTENSION));
+                        
+                        // Si es imagen, la mostramos completa
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                            echo "<img src='" . $row['archivo_pdf'] . "' style='width:100%; height:100%; object-fit:cover;'>";
+                        } 
+                        // Si es otro archivo, mostramos el icono correspondiente
+                        else {
+                            $icon = "fa-book";
+                            $color = "#cbd5e1";
+                            if($ext == 'doc' || $ext == 'docx') { $icon = "fa-file-word"; $color = "#2563eb"; }
+                            if($ext == 'pdf') { $icon = "fa-file-pdf"; $color = "#ef4444"; }
+                            
+                            echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; width:100%; background:#f1f5f9;'>";
+                            echo "<i class='fa-solid $icon' style='font-size:3.5rem; color:$color;'></i>";
+                            echo "</div>";
+                        }
                         ?>
-                        <i class="fa-solid <?php echo $icon; ?>" style="font-size:3rem; color:#cbd5e1;"></i>
                     </div>
+                    
                     <div class="book-body">
                         <span class="tag"><?php echo $row['categoria']; ?></span>
                         <h3 style="margin:10px 0; font-size:1.1rem;"><?php echo $row['titulo']; ?></h3>

@@ -2,6 +2,7 @@
 session_start();
 include 'db.php';
 
+// Verificamos si el usuario está logueado
 if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -11,22 +12,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
     
-    // Archivo
+    // Configuración de archivo
     $nombreOriginal = $_FILES["archivo"]["name"];
     $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
     $nombreArchivo = time() . "_" . basename($nombreOriginal);
-    $ruta = "uploads/" . $nombreArchivo;
     
-    $permitidos = array("pdf", "doc", "docx", "jpg", "png");
+    // --- SOLUCIÓN: Crear carpeta si no existe ---
+    $directorio = "uploads/";
+    if (!file_exists($directorio)) {
+        if (!mkdir($directorio, 0777, true)) {
+            die("Error fatal: No se pudo crear la carpeta uploads. Créala manualmente.");
+        }
+    }
+    
+    $ruta = $directorio . $nombreArchivo;
+    $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
     if (in_array($ext, $permitidos)) {
         if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $ruta)) {
-            // INSERTAR COMO PENDIENTE
+            // Insertamos con estado 'pendiente'
             $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo) 
                     VALUES ('$titulo', '$autor', '$cat', '$desc', '$ruta', $uid, 'pendiente', '$ext')";
-            mysqli_query($conn, $sql);
-            header("Location: index.php?msg=uploaded"); 
-            exit;
+            
+            if(mysqli_query($conn, $sql)){
+                header("Location: index.php?msg=uploaded"); 
+                exit;
+            } else {
+                $error = "Error en base de datos: " . mysqli_error($conn);
+            }
+        } else {
+            $error = "Error al mover el archivo. Verifica que la carpeta 'uploads' exista.";
         }
     } else {
         $error = "Formato no permitido (Solo PDF, Word, JPG, PNG)";
