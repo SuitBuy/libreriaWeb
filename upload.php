@@ -2,7 +2,6 @@
 session_start();
 include 'db.php';
 
-// Verificamos si el usuario está logueado
 if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -12,39 +11,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
     
-    // Configuración de archivo
-    $nombreOriginal = $_FILES["archivo"]["name"];
-    $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
-    $nombreArchivo = time() . "_" . basename($nombreOriginal);
+    // Obtener información del archivo
+    $nombreOriginal = mysqli_real_escape_string($conn, $_FILES["archivo"]["name"]);
+    $ext = strtolower(pathinfo($_FILES["archivo"]["name"], PATHINFO_EXTENSION));
     
-    // --- SOLUCIÓN: Crear carpeta si no existe ---
-    $directorio = "uploads/";
-    if (!file_exists($directorio)) {
-        if (!mkdir($directorio, 0777, true)) {
-            die("Error fatal: No se pudo crear la carpeta uploads. Créala manualmente.");
-        }
-    }
+    // LEER EL ARCHIVO EN BINARIO (Para guardarlo en BD)
+    $contenido = addslashes(file_get_contents($_FILES['archivo']['tmp_name'])); 
     
-    $ruta = $directorio . $nombreArchivo;
     $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
     if (in_array($ext, $permitidos)) {
-        if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $ruta)) {
-            // Insertamos con estado 'pendiente'
-            $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo) 
-                    VALUES ('$titulo', '$autor', '$cat', '$desc', '$ruta', $uid, 'pendiente', '$ext')";
-            
-            if(mysqli_query($conn, $sql)){
-                header("Location: index.php?msg=uploaded"); 
-                exit;
-            } else {
-                $error = "Error en base de datos: " . mysqli_error($conn);
-            }
+        // Insertamos los datos BINARIOS en la columna 'datos'
+        // 'archivo_pdf' ahora solo guardará el nombre original para referencia
+        $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo, datos) 
+                VALUES ('$titulo', '$autor', '$cat', '$desc', '$nombreOriginal', $uid, 'pendiente', '$ext', '$contenido')";
+        
+        if(mysqli_query($conn, $sql)){
+            header("Location: index.php?msg=uploaded"); 
+            exit;
         } else {
-            $error = "Error al mover el archivo. Verifica que la carpeta 'uploads' exista.";
+            $error = "Error en base de datos: " . mysqli_error($conn);
         }
     } else {
-        $error = "Formato no permitido (Solo PDF, Word, JPG, PNG)";
+        $error = "Formato no permitido.";
     }
 }
 ?>
@@ -61,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <a href="index.php">Cancelar</a>
     </nav>
     <div class="auth-wrapper" style="max-width:600px;">
-        <h2>Publicar Aporte</h2>
-        <p style="color:#64748b; margin-bottom:20px;">Tu archivo pasará a revisión por un administrador.</p>
+        <h2>Publicar Aporte (Base de Datos)</h2>
+        <p style="color:#64748b; margin-bottom:20px;">Tu archivo se guardará de forma segura en la nube.</p>
         
         <?php if(isset($error)) echo "<div class='alert alert-error'>$error</div>"; ?>
 
