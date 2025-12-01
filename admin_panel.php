@@ -95,7 +95,7 @@ $aprobados = mysqli_query($conn, "SELECT r.*, u.nombre AS nombre_uploader FROM r
         <div class="logo">
             <div class="logo-icon"></div>Panel de Control
         </div>
-        <div class="nav-links"><a href="index.php">Ver Web</a><a href="logout.php" style="color:#ef4444;">Cerrar Sesión</a></div>
+        <div class="nav-links"><a href="index.php">Inicio</a><a href="logout.php" style="color:#ef4444;">Cerrar Sesión</a></div>
     </nav>
 
     <div class="container" style="margin-top:40px;">
@@ -118,8 +118,7 @@ $aprobados = mysqli_query($conn, "SELECT r.*, u.nombre AS nombre_uploader FROM r
                             <p style="font-size:0.9rem; margin:0;">Autor Obra: <strong><?php echo $row['autor_nombre']; ?></strong></p>
                             <div class="uploader-info"><i class="fa-solid fa-user-upload"></i> Subido por: <strong><?php echo $row['nombre_uploader']; ?></strong></div>
                             <div style="margin-top:15px; display:flex; gap:5px;">
-                                <a href="ver.php?id=<?php echo $row['id']; ?>" target="_blank" class="action-btn" style="background:#64748b; color:white; flex:1; text-align:center;">Ver</a>
-                                <a href="admin_panel.php?action=approve&id=<?php echo $row['id']; ?>" class="action-btn" style="background:#10b981; color:white; flex:1; text-align:center;"><i class="fa-solid fa-check"></i></a>
+                                <a href="detalle.php?id=<?php echo $row['id']; ?>" target="_blank" class="action-btn" style="background:#64748b; color:white; flex:1; text-align:center;">Ver</a> <a href="admin_panel.php?action=approve&id=<?php echo $row['id']; ?>" class="action-btn" style="background:#10b981; color:white; flex:1; text-align:center;"><i class="fa-solid fa-check"></i></a>
                                 <a href="admin_panel.php?action=reject&id=<?php echo $row['id']; ?>" class="action-btn" style="background:#ef4444; color:white; flex:1; text-align:center;"><i class="fa-solid fa-xmark"></i></a>
                             </div>
                         </div>
