@@ -136,7 +136,7 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                         <div class="preview-container">
                             <?php
                             // Usamos ver.php para cargar la imagen real solo cuando sea necesario
-                            $ruta_visual = "ver.php?id=" . $row['id'];
+                            $ruta_visual = $row['archivo_pdf'];
                             $ext = strtolower($row['tipo_archivo']);
 
                             if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {

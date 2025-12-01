@@ -70,7 +70,7 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
 
             <div style="flex:3; border-radius:20px; overflow:hidden; border:1px solid #e2e8f0; min-height:850px; background:white;">
                 <?php
-                $ruta_visual = "ver.php?id=" . $row['id'];
+                $ruta_visual = $row['archivo_pdf'];
                 $ext = strtolower($row['tipo_archivo']);
 
                 if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
