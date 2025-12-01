@@ -179,7 +179,7 @@ if ($isLoggedIn) {
                             if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                                 echo "<img src='$ruta' class='preview-img' loading='lazy'>";
                             } elseif ($ext == 'pdf') {
-                                echo "<iframe src='$ruta#toolbar=0&navpanes=0&scrollbar=0&view=Fit' style='width:100%; height:100%; border:none;' loading='lazy'></iframe>";
+                                echo "<iframe src='$ruta#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0'class='preview-img'scrolling='no'style='width:100%; height:100%; border:none; overflow:hidden; pointer-events:none;'loading='lazy'></iframe>";
                                 echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
                             } else {
                                 $icon = ($ext == 'doc' || $ext == 'docx') ? "fa-file-word" : "fa-book";
