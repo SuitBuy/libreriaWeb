@@ -1,18 +1,24 @@
 <?php
-include 'db.php';
+include 'db.php'; //
 $msg = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = mysqli_real_escape_string($conn, $_POST['nombre']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $rol = $_POST['rol'];
+    
+    // N uevos campos de seguridad
+    $pregunta = mysqli_real_escape_string($conn, $_POST['pregunta']);
+    // Encriptamos la respuesta para que nadie la pueda leer en la BD
+    $respuesta = password_hash(strtolower(trim($_POST['respuesta'])), PASSWORD_DEFAULT);
 
-    // SEGURIDAD: Evitar que alguien se registre como admin vía HTML injection
     if ($rol != 'estudiante' && $rol != 'autor') {
-        $rol = 'estudiante'; // Forzar rol seguro por defecto
+        $rol = 'estudiante'; 
     }
 
-    $sql = "INSERT INTO usuarios (nombre, email, password, rol) VALUES ('$nombre', '$email', '$pass', '$rol')";
+    $sql = "INSERT INTO usuarios (nombre, email, password, rol, pregunta_seguridad, respuesta_seguridad) 
+            VALUES ('$nombre', '$email', '$pass', '$rol', '$pregunta', '$respuesta')";
+            
     if (@mysqli_query($conn, $sql)) header("Location: login.php?success=1");
     else $msg = "El correo ya está registrado.";
 }
@@ -32,11 +38,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="auth-wrapper">
         <h2 style="text-align:center; margin-bottom:20px;">Crear Cuenta</h2>
         <?php if($msg) echo "<div class='alert alert-error'>$msg</div>"; ?>
+        
         <form method="POST">
             <input type="text" name="nombre" class="input-field" placeholder="Nombre completo" required>
             <input type="email" name="email" class="input-field" placeholder="Correo electrónico" required>
             <input type="password" name="password" class="input-field" placeholder="Contraseña segura" required>
-            <p style="font-size:0.9rem; margin-bottom:5px; color:#64748b;">Selecciona tu perfil:</p>
+            
+            <p style="font-size:0.9rem; margin-bottom:5px; margin-top:15px; color:#64748b; font-weight:bold;">Seguridad de la cuenta:</p>
+            <select name="pregunta" class="input-field" required>
+                <option value="" disabled selected>Selecciona una pregunta de seguridad...</option>
+                <option value="animal">¿Cuál es el nombre de tu primera mascota?</option>
+                <option value="madre">¿Cuál es el segundo nombre de tu madre?</option>
+                <option value="ciudad">¿En qué ciudad naciste?</option>
+                <option value="comida">¿Cuál es tu comida favorita?</option>
+                <option value="escuela">¿Cómo se llamaba tu primera escuela?</option>
+            </select>
+            <input type="text" name="respuesta" class="input-field" placeholder="Tu respuesta secreta" required>
+
+            <p style="font-size:0.9rem; margin-bottom:5px; margin-top:15px; color:#64748b;">Selecciona tu perfil:</p>
             <select name="rol" class="input-field">
                 <option value="estudiante">Estudiante</option>
                 <option value="autor">Autor / Investigador</option>

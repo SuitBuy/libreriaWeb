@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php';
+include 'db.php'; //
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -38,10 +38,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <?php if($error) echo "<div class='alert alert-error'>$error</div>"; ?>
         <?php if(isset($_GET['success'])) echo "<div class='alert alert-success'>¡Cuenta creada! Inicia sesión.</div>"; ?>
+        <?php if(isset($_GET['msg']) && $_GET['msg'] == 'restored') echo "<div class='alert alert-success'>¡Contraseña actualizada!</div>"; ?>
         
         <form method="POST">
             <input type="email" name="email" class="input-field" placeholder="Correo electrónico" required>
             <input type="password" name="password" class="input-field" placeholder="Contraseña" required>
+            
+            <div style="text-align:right; margin-bottom:15px;">
+                <a href="recuperar.php" style="color:#64748b; font-size:0.85rem; text-decoration:none;">
+                    <i class="fa-solid fa-key"></i> ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
             <button type="submit" class="btn-login" style="width:100%;">Entrar</button>
         </form>
         <p style="text-align:center; margin-top:20px; font-size:0.9rem;">
