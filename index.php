@@ -2,28 +2,42 @@
 session_start();
 include 'db.php';
 
+// --- CONFIGURACIÓN DE PAGINACIÓN ---
+$registros_por_pagina = 12; // Cantidad de libros por página
+$pagina_actual = isset($_GET['pag']) ? (int)$_GET['pag'] : 1;
+if ($pagina_actual < 1) $pagina_actual = 1;
+$offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+// --- FILTROS DE BÚSQUEDA ---
 $where = "r.estado = 'aprobado'";
 if (isset($_GET['q']) && $_GET['q'] != '') {
     $q = mysqli_real_escape_string($conn, $_GET['q']);
     $where .= " AND (r.titulo LIKE '%$q%' OR r.autor_nombre LIKE '%$q%' OR u.nombre LIKE '%$q%')";
 }
-if (isset($_GET['cat']) && $_GET['cat'] != 'Todas') {
+if (isset($_GET['cat']) && $_GET['cat'] != 'Todas' && isset($_GET['cat'])) {
     $c = mysqli_real_escape_string($conn, $_GET['cat']);
     $where .= " AND r.categoria = '$c'";
 }
 
-// Consulta optimizada
-$sql = "SELECT r.*, u.nombre AS subido_por 
+// 1. Contar total de libros (para calcular el número de páginas)
+$sql_total = "SELECT COUNT(*) as total FROM recursos r JOIN usuarios u ON r.usuario_id = u.id WHERE $where";
+$total_rows = mysqli_fetch_assoc(mysqli_query($conn, $sql_total))['total'];
+$total_paginas = ceil($total_rows / $registros_por_pagina);
+
+// 2. Consulta LIMITADA (Trae solo los libros de la página actual)
+// Nota: Seleccionamos u.id as usuario_id para el enlace al perfil
+$sql = "SELECT r.*, u.nombre AS subido_por, u.id as usuario_id 
         FROM recursos r 
         JOIN usuarios u ON r.usuario_id = u.id 
         WHERE $where 
-        ORDER BY r.id DESC";
+        ORDER BY r.id DESC 
+        LIMIT $offset, $registros_por_pagina";
 
 $libros = mysqli_query($conn, $sql);
 $isLoggedIn = isset($_SESSION['uid']);
 $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
 
-// Verificar plan
+// Verificar plan del usuario logueado
 $user_plan = 'gratis';
 if ($isLoggedIn) {
     $uid = $_SESSION['uid'];
@@ -84,6 +98,16 @@ if ($isLoggedIn) {
             gap: 5px;
             margin-top: 8px;
         }
+
+        .uploader-tag a {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .uploader-tag a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -117,12 +141,14 @@ if ($isLoggedIn) {
                 <p>Accede a miles de recursos académicos subidos por la comunidad.</p>
 
                 <form method="GET" class="search-container">
-                    <input type="text" name="q" class="search-input" placeholder="¿Qué quieres aprender hoy?">
+                    <input type="text" name="q" class="search-input" placeholder="¿Qué quieres aprender hoy?" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
                     <select name="cat" class="search-select">
                         <option>Todas</option>
                         <option>Ciencias</option>
                         <option>Arte</option>
                         <option>Historia</option>
+                        <option>Ingeniería</option>
+                        <option>Otros</option>
                     </select>
                     <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
@@ -152,78 +178,109 @@ if ($isLoggedIn) {
 
     <div class="container">
         <h2 class="section-title">Explorar Biblioteca</h2>
-        <div class="grid">
-            <?php while ($row = mysqli_fetch_assoc($libros)): ?>
-                <?php
-                $es_contenido_premium = ($row['es_premium'] == 1);
-                $tiene_acceso = false;
 
-                if ($isLoggedIn) {
-                    if (!$es_contenido_premium) $tiene_acceso = true;
-                    elseif ($es_contenido_premium && $user_plan == 'premium') $tiene_acceso = true;
-                    elseif ($es_contenido_premium && $_SESSION['rol'] == 'admin') $tiene_acceso = true;
-                }
-                ?>
-                <div class="book-card" style="position:relative;">
+        <?php if (mysqli_num_rows($libros) == 0): ?>
+            <div style="text-align: center; padding: 50px; color: #64748b;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                <p>No se encontraron resultados.</p>
+                <a href="index.php" class="btn-outline" style="max-width: 200px; margin: 20px auto;">Ver Todo</a>
+            </div>
+        <?php else: ?>
+            <div class="grid">
+                <?php while ($row = mysqli_fetch_assoc($libros)): ?>
+                    <?php
+                    $es_contenido_premium = ($row['es_premium'] == 1);
+                    $tiene_acceso = false;
 
-                    <?php if ($es_contenido_premium): ?>
-                        <div class="premium-badge"><i class="fa-solid fa-crown"></i> PRO</div>
-                    <?php endif; ?>
+                    if ($isLoggedIn) {
+                        if (!$es_contenido_premium) $tiene_acceso = true;
+                        elseif ($es_contenido_premium && $user_plan == 'premium') $tiene_acceso = true;
+                        elseif ($es_contenido_premium && $_SESSION['rol'] == 'admin') $tiene_acceso = true;
+                    }
+                    ?>
+                    <div class="book-card" style="position:relative;">
 
-                    <div class="<?php echo !$tiene_acceso ? 'blur-content' : ''; ?>">
-                        <div class="preview-container">
-                            <?php
-                            $ruta = htmlspecialchars($row['archivo_pdf']);
-                            $ext = strtolower($row['tipo_archivo']);
+                        <?php if ($es_contenido_premium): ?>
+                            <div class="premium-badge"><i class="fa-solid fa-crown"></i> PRO</div>
+                        <?php endif; ?>
 
-                            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                                echo "<img src='$ruta' class='preview-img' loading='lazy'>";
-                            } elseif ($ext == 'pdf') {
-                                echo "<iframe src='$ruta#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0'class='preview-img'scrolling='no'style='width:100%; height:100%; border:none; overflow:hidden; pointer-events:none;'loading='lazy'></iframe>";
-                                echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
-                            } else {
-                                $icon = ($ext == 'doc' || $ext == 'docx') ? "fa-file-word" : "fa-book";
-                                $color = ($ext == 'doc' || $ext == 'docx') ? "#2563eb" : "#cbd5e1";
-                                echo "<i class='fa-solid $icon' style='font-size:4rem; color:$color;'></i>";
-                            }
-                            ?>
-                        </div>
-                        <div class="book-body">
-                            <span class="tag"><?php echo $row['categoria']; ?></span>
-                            <h3 style="margin:12px 0 5px 0; font-size:1.1rem; font-weight:700; color:#1e293b;"><?php echo $row['titulo']; ?></h3>
-                            <p style="font-size:0.9rem; color:#64748b; margin:0;">Autor: <?php echo $row['autor_nombre']; ?></p>
+                        <div class="<?php echo !$tiene_acceso ? 'blur-content' : ''; ?>">
+                            <div class="preview-container">
+                                <?php
+                                $ruta = htmlspecialchars($row['archivo_pdf']);
+                                $ext = strtolower($row['tipo_archivo']);
 
-                            <div class="uploader-tag">
-                                <i class="fa-solid fa-user-circle"></i> <span><?php echo $row['subido_por']; ?></span>
+                                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                                    echo "<img src='$ruta' class='preview-img' loading='lazy'>";
+                                } elseif ($ext == 'pdf') {
+                                    // Iframe optimizado sin scrollbars
+                                    echo "<iframe src='$ruta#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0' class='preview-img' scrolling='no' style='width:100%; height:100%; border:none; overflow:hidden; pointer-events:none;' loading='lazy'></iframe>";
+                                    echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
+                                } else {
+                                    $icon = ($ext == 'doc' || $ext == 'docx') ? "fa-file-word" : "fa-book";
+                                    $color = ($ext == 'doc' || $ext == 'docx') ? "#2563eb" : "#cbd5e1";
+                                    echo "<i class='fa-solid $icon' style='font-size:4rem; color:$color;'></i>";
+                                }
+                                ?>
                             </div>
+                            <div class="book-body">
+                                <span class="tag"><?php echo $row['categoria']; ?></span>
+                                <h3 style="margin:12px 0 5px 0; font-size:1.1rem; font-weight:700; color:#1e293b;"><?php echo $row['titulo']; ?></h3>
+                                <p style="font-size:0.9rem; color:#64748b; margin:0;">Autor: <?php echo $row['autor_nombre']; ?></p>
 
-                            <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline" style="margin-top:15px;">Ver Material</a>
+                                <div class="uploader-tag">
+                                    <i class="fa-solid fa-user-circle"></i>
+                                    <a href="autor.php?id=<?php echo $row['usuario_id']; ?>">
+                                        <?php echo $row['subido_por']; ?>
+                                    </a>
+                                </div>
+
+                                <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline" style="margin-top:15px;">Ver Material</a>
+                            </div>
                         </div>
+
+                        <?php if (!$isLoggedIn): ?>
+                            <div class="locked-overlay">
+                                <div style="background:white; padding:15px; border-radius:50%; margin-bottom:10px; width:60px; height:60px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto;">
+                                    <i class="fa-solid fa-lock" style="font-size:1.5rem; color:#1e293b;"></i>
+                                </div>
+                                <h4 style="margin:0 0 5px 0; color:#1e293b;">Contenido Privado</h4>
+                                <p style="font-size:0.8rem; color:#64748b; margin-bottom:15px;">Inicia sesión para acceder.</p>
+                                <a href="login.php" class="btn-login">Entrar</a>
+                            </div>
+                        <?php elseif (!$tiene_acceso && $es_contenido_premium): ?>
+                            <div class="locked-overlay">
+                                <div style="background:#fef3c7; padding:15px; border-radius:50%; margin-bottom:10px; width:60px; height:60px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto;">
+                                    <i class="fa-solid fa-crown" style="font-size:1.5rem; color:#d97706;"></i>
+                                </div>
+                                <h4 style="margin:0 0 5px 0; color:#b45309;">Solo Premium</h4>
+                                <p style="font-size:0.8rem; color:#92400e; margin-bottom:15px;">Mejora tu cuenta para ver.</p>
+                                <a href="premiun.php" class="btn-login" style="background:#eab308; box-shadow: none;">Ver Planes</a>
+                            </div>
+                        <?php endif; ?>
+
                     </div>
+                <?php endwhile; ?>
+            </div>
 
-                    <?php if (!$isLoggedIn): ?>
-                        <div class="locked-overlay">
-                            <div style="background:white; padding:15px; border-radius:50%; margin-bottom:10px; width:60px; height:60px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto;">
-                                <i class="fa-solid fa-lock" style="font-size:1.5rem; color:#1e293b;"></i>
-                            </div>
-                            <h4 style="margin:0 0 5px 0; color:#1e293b;">Contenido Privado</h4>
-                            <p style="font-size:0.8rem; color:#64748b; margin-bottom:15px;">Inicia sesión para acceder.</p>
-                            <a href="login.php" class="btn-login">Entrar</a>
-                        </div>
-                    <?php elseif (!$tiene_acceso && $es_contenido_premium): ?>
-                        <div class="locked-overlay">
-                            <div style="background:#fef3c7; padding:15px; border-radius:50%; margin-bottom:10px; width:60px; height:60px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto;">
-                                <i class="fa-solid fa-crown" style="font-size:1.5rem; color:#d97706;"></i>
-                            </div>
-                            <h4 style="margin:0 0 5px 0; color:#b45309;">Solo Premium</h4>
-                            <p style="font-size:0.8rem; color:#92400e; margin-bottom:15px;">Mejora tu cuenta para ver.</p>
-                            <a href="premiun.php" class="btn-login" style="background:#eab308; box-shadow: none;">Ver Planes</a>
-                        </div>
-                    <?php endif; ?>
+            <div style="display: flex; justify-content: center; gap: 10px; margin: 40px 0;">
+                <?php if ($pagina_actual > 1): ?>
+                    <a href="?pag=<?php echo $pagina_actual - 1; ?>&q=<?php echo isset($_GET['q']) ? $_GET['q'] : ''; ?>&cat=<?php echo isset($_GET['cat']) ? $_GET['cat'] : ''; ?>" class="btn-outline" style="width: auto; padding: 10px 20px;">
+                        ← Anterior
+                    </a>
+                <?php endif; ?>
 
-                </div>
-            <?php endwhile; ?>
-        </div>
+                <span style="padding: 10px 15px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; font-weight:600; color:#64748b;">
+                    Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?>
+                </span>
+
+                <?php if ($pagina_actual < $total_paginas): ?>
+                    <a href="?pag=<?php echo $pagina_actual + 1; ?>&q=<?php echo isset($_GET['q']) ? $_GET['q'] : ''; ?>&cat=<?php echo isset($_GET['cat']) ? $_GET['cat'] : ''; ?>" class="btn-login" style="width: auto; padding: 10px 20px;">
+                        Siguiente →
+                    </a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </body>
 
