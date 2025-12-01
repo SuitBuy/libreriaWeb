@@ -41,7 +41,7 @@ $aprobados = mysqli_query($conn, "SELECT r.*, u.nombre AS nombre_uploader FROM r
 <head>
     <title>Panel Admin - Urban Canvas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=<?php echo time(); ?>">
     <style>
         .admin-header {
             background: #1e293b;

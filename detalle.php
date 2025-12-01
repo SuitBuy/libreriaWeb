@@ -48,7 +48,7 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
 <head>
     <title><?php echo $row['titulo']; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=<?php echo time(); ?>">
     <style>
         iframe {
             display: block;
