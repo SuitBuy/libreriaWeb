@@ -2,7 +2,10 @@
 session_start();
 include 'db.php';
 
-if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
+if (!isset($_SESSION['uid'])) {
+    header("Location: login.php");
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titulo = mysqli_real_escape_string($conn, $_POST['titulo']);
@@ -10,26 +13,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cat = mysqli_real_escape_string($conn, $_POST['categoria']);
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
-    
-    // Obtener info del archivo
-    $nombreOriginal = mysqli_real_escape_string($conn, $_FILES["archivo"]["name"]);
-    $ext = strtolower(pathinfo($_FILES["archivo"]["name"], PATHINFO_EXTENSION));
-    
-    // --- CAMBIO CLAVE: LEER EL ARCHIVO PARA GUARDARLO EN BD ---
-    $contenido = addslashes(file_get_contents($_FILES['archivo']['tmp_name'])); 
-    
+
+    // --- GESTIÓN DE ARCHIVO EN DISCO ---
+    $nombreOriginal = $_FILES["archivo"]["name"];
+    $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+
+    // Generamos nombre único para evitar que se sobrescriban
+    $nombreFinal = time() . "_" . preg_replace("/[^a-zA-Z0-9\.]/", "", $nombreOriginal);
+    $rutaDestino = "uploads/" . $nombreFinal;
+
+    // Crear carpeta si no existe (aunque el volumen debería encargarse)
+    if (!file_exists("uploads")) {
+        mkdir("uploads", 0777, true);
+    }
+
     $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
     if (in_array($ext, $permitidos)) {
-        // Insertamos en la columna 'datos'
-        $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo, datos) 
-                VALUES ('$titulo', '$autor', '$cat', '$desc', '$nombreOriginal', $uid, 'pendiente', '$ext', '$contenido')";
-        
-        if(mysqli_query($conn, $sql)){
-            header("Location: index.php?msg=uploaded"); 
-            exit;
+        if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
+            // Guardamos solo la RUTA (texto) en la BD, no el archivo pesado
+            // Nota: No usamos la columna 'datos' aquí
+            $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo) 
+                    VALUES ('$titulo', '$autor', '$cat', '$desc', '$rutaDestino', $uid, 'pendiente', '$ext')";
+
+            if (mysqli_query($conn, $sql)) {
+                header("Location: index.php?msg=uploaded");
+                exit;
+            } else {
+                $error = "Error BD: " . mysqli_error($conn);
+            }
         } else {
-            $error = "Error en BD: " . mysqli_error($conn);
+            $error = "Error al guardar el archivo en el volumen.";
         }
     } else {
         $error = "Formato no permitido.";
@@ -38,35 +52,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Subir - Urban Canvas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Subir</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
+
 <body style="background:#f1f5f9;">
     <nav class="navbar">
-        <div class="logo"><div class="logo-icon"></div>Urban Canvas</div>
-        <a href="index.php">Cancelar</a>
+        <div class="logo">Urban Canvas</div><a href="index.php">Cancelar</a>
     </nav>
-    <div class="auth-wrapper" style="max-width:600px;">
-        <h2>Publicar Aporte</h2>
-        <p style="color:#64748b; margin-bottom:20px;">Tu archivo se guardará seguro en la base de datos.</p>
-        <?php if(isset($error)) echo "<div class='alert alert-error'>$error</div>"; ?>
+    <div class="auth-wrapper">
+        <h2>Subir Archivo (Modo Volumen)</h2>
+        <?php if (isset($error)) echo "<div class='alert alert-error'>$error</div>"; ?>
         <form method="POST" enctype="multipart/form-data">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <input type="text" name="titulo" class="input-field" placeholder="Título" required>
-                <input type="text" name="autor" class="input-field" placeholder="Autor" required>
-            </div>
+            <input type="text" name="titulo" class="input-field" placeholder="Título" required>
+            <input type="text" name="autor" class="input-field" placeholder="Autor" required>
             <select name="categoria" class="input-field">
-                <option>Ciencias</option><option>Arte</option><option>Historia</option><option>Ingeniería</option><option>Otros</option>
+                <option>Ciencias</option>
+                <option>Arte</option>
+                <option>Historia</option>
+                <option>Ingeniería</option>
+                <option>Otros</option>
             </select>
-            <textarea name="desc" class="input-field" placeholder="Descripción..." rows="3"></textarea>
-            <div style="margin:20px 0; padding:20px; border:2px dashed #cbd5e1; border-radius:15px; text-align:center;">
-                <p>Soporta: PDF, DOC, JPG, PNG</p>
-                <input type="file" name="archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+            <textarea name="desc" class="input-field" placeholder="Descripción..."></textarea>
+            <div style="margin:20px 0; border:2px dashed #ccc; padding:20px; text-align:center;">
+                <input type="file" name="archivo" required>
             </div>
-            <button type="submit" class="btn-login" style="width:100%;">Enviar</button>
+            <button type="submit" class="btn-login" style="width:100%;">Subir</button>
         </form>
     </div>
 </body>
+
 </html>

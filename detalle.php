@@ -12,24 +12,31 @@ if (!isset($_SESSION['uid'])) {
 }
 
 $id = mysqli_real_escape_string($conn, $_GET['id']);
+$uid = $_SESSION['uid'];
 
-if (!isset($_SESSION['recursos_vistos'])) {
-    $_SESSION['recursos_vistos'] = array();
-}
-if (!in_array($id, $_SESSION['recursos_vistos'])) {
+// --- LÓGICA DE VISITAS PROFESIONAL (BASE DE DATOS) ---
+// 1. Consultamos si este usuario YA vio este recurso
+$check_vista = mysqli_query($conn, "SELECT id FROM historial_vistas WHERE usuario_id = $uid AND recurso_id = $id");
+
+// 2. Si NO existe registro, contamos la visita
+if (mysqli_num_rows($check_vista) == 0) {
+    // Aumentamos contador
     mysqli_query($conn, "UPDATE recursos SET vistas = vistas + 1 WHERE id = $id");
-    $_SESSION['recursos_vistos'][] = $id;
+    // Guardamos en el historial para que no vuelva a contar nunca más
+    mysqli_query($conn, "INSERT INTO historial_vistas (usuario_id, recurso_id) VALUES ($uid, $id)");
 }
+// -----------------------------------------------------
 
-// CONSULTA OPTIMIZADA
+// CONSULTA DE DETALLES
 $query = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.descripcion, r.archivo_pdf, r.tipo_archivo, r.vistas, u.nombre AS subido_por 
-          FROM recursos r JOIN usuarios u ON r.usuario_id = u.id WHERE r.id=$id";
+          FROM recursos r 
+          JOIN usuarios u ON r.usuario_id = u.id 
+          WHERE r.id=$id";
 $row = mysqli_fetch_assoc(mysqli_query($conn, $query));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $com = mysqli_real_escape_string($conn, $_POST['comentario']);
     $val = (int)$_POST['valoracion'];
-    $uid = $_SESSION['uid'];
     mysqli_query($conn, "INSERT INTO comentarios (recurso_id, usuario_id, comentario, valoracion) VALUES ($id, $uid, '$com', $val)");
 }
 $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN usuarios u ON c.usuario_id = u.id WHERE recurso_id=$id ORDER BY fecha DESC");
@@ -58,6 +65,7 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
     </nav>
 
     <div class="container" style="margin-top:20px; max-width: 95%;">
+
         <div style="background:white; border-radius:30px; padding:30px; box-shadow:var(--card-shadow); display:flex; gap:30px; flex-wrap:wrap;">
 
             <div style="flex:3; border-radius:20px; overflow:hidden; border:1px solid #e2e8f0; min-height:850px; background:white;">
