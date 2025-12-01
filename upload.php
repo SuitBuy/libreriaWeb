@@ -11,24 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
     
-    // Configuración de archivo
+    // --- GESTIÓN DE ARCHIVO EN VOLUMEN ---
     $nombreOriginal = $_FILES["archivo"]["name"];
     $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
     
-    // Nombre único para evitar sobrescribir
+    // Nombre único y limpio
     $nombreFinal = time() . "_" . preg_replace("/[^a-zA-Z0-9\.]/", "", $nombreOriginal);
     $rutaDestino = "uploads/" . $nombreFinal;
     
-    // Crear carpeta si no existe
+    // Crear carpeta si no existe (por seguridad)
     if (!file_exists("uploads")) { mkdir("uploads", 0777, true); }
 
     $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
     if (in_array($ext, $permitidos)) {
-        // MOVER EL ARCHIVO A LA CARPETA (VOLUMEN)
         if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
-            // Guardamos la RUTA en la BD, no el archivo pesado
-            // IMPORTANTE: Ya no usamos la columna 'datos'
+            // Guardamos la RUTA ('uploads/archivo.pdf') en la BD
             $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo) 
                     VALUES ('$titulo', '$autor', '$cat', '$desc', '$rutaDestino', $uid, 'pendiente', '$ext')";
             
@@ -39,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error = "Error BD: " . mysqli_error($conn);
             }
         } else {
-            $error = "Error al guardar el archivo. Verifica que el volumen exista.";
+            $error = "Error al guardar en el volumen. Verifica los permisos.";
         }
     } else {
         $error = "Formato no permitido.";

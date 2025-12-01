@@ -11,15 +11,20 @@ $uid = $_SESSION['uid'];
 // --- LÓGICA 1: ELIMINAR PUBLICACIÓN ---
 if (isset($_GET['borrar'])) {
     $id_recurso = (int)$_GET['borrar'];
-    // Verificar que el recurso pertenezca al usuario actual (Seguridad)
-    $check = mysqli_query($conn, "SELECT id FROM recursos WHERE id = $id_recurso AND usuario_id = $uid");
-    if (mysqli_num_rows($check) > 0) {
-        // Borramos de BD (El archivo físico se mantiene por seguridad o se puede borrar con unlink si se desea)
+
+    // Verificar propiedad y obtener archivo
+    $check = mysqli_query($conn, "SELECT id, archivo_pdf FROM recursos WHERE id = $id_recurso AND usuario_id = $uid");
+
+    if ($row = mysqli_fetch_assoc($check)) {
+        // BORRAR DEL DISCO
+        if (file_exists($row['archivo_pdf'])) {
+            unlink($row['archivo_pdf']);
+        }
+        // BORRAR DE BD
         mysqli_query($conn, "DELETE FROM recursos WHERE id = $id_recurso");
         header("Location: perfil.php?msg=deleted");
     }
 }
-
 // --- LÓGICA 2: ACTUALIZAR PERFIL ---
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     $bio = mysqli_real_escape_string($conn, $_POST['bio']);
