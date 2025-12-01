@@ -12,6 +12,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 'Todas') {
     $where .= " AND r.categoria = '$c'";
 }
 
+// Consulta optimizada
 $sql = "SELECT r.*, u.nombre AS subido_por 
         FROM recursos r 
         JOIN usuarios u ON r.usuario_id = u.id 
@@ -20,7 +21,16 @@ $sql = "SELECT r.*, u.nombre AS subido_por
 
 $libros = mysqli_query($conn, $sql);
 $isLoggedIn = isset($_SESSION['uid']);
-$isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
+
+// Verificar plan del usuario actual
+$user_plan = 'gratis';
+if ($isLoggedIn) {
+    $uid = $_SESSION['uid'];
+    $u_query = mysqli_query($conn, "SELECT plan FROM usuarios WHERE id=$uid");
+    if ($u_data = mysqli_fetch_assoc($u_query)) {
+        $user_plan = $u_data['plan'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,6 +65,20 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
             cursor: pointer;
         }
 
+        .premium-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #eab308;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
         .uploader-tag {
             font-size: 0.8rem;
             color: #64748b;
@@ -74,9 +98,10 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
         </div>
         <div class="nav-links">
             <a href="index.php">Inicio</a>
+            <a href="premiun.php" style="color:#eab308; font-weight:bold;">Planes</a>
             <?php if ($isLoggedIn): ?>
                 <a href="upload.php">+ Subir</a>
-                <?php if ($isAdmin): ?><a href="admin_panel.php" style="color:#eab308;">Admin</a><?php endif; ?>
+                <?php if ($_SESSION['rol'] == 'admin'): ?><a href="admin_panel.php" style="color:#eab308;">Admin</a><?php endif; ?>
                 <a href="perfil.php">Perfil</a>
                 <a href="logout.php" style="color:red;">Salir</a>
             <?php else: ?>
@@ -111,8 +136,24 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
         <h2 class="section-title">Biblioteca Pública</h2>
         <div class="grid">
             <?php while ($row = mysqli_fetch_assoc($libros)): ?>
+                <?php
+                // Lógica de Acceso
+                $es_contenido_premium = ($row['es_premium'] == 1);
+                $tiene_acceso = false;
+
+                if ($isLoggedIn) {
+                    if (!$es_contenido_premium) $tiene_acceso = true;
+                    elseif ($es_contenido_premium && $user_plan == 'premium') $tiene_acceso = true;
+                    elseif ($es_contenido_premium && $_SESSION['rol'] == 'admin') $tiene_acceso = true;
+                }
+                ?>
                 <div class="book-card" style="position:relative;">
-                    <div class="<?php echo !$isLoggedIn ? 'blur-content' : ''; ?>">
+
+                    <?php if ($es_contenido_premium): ?>
+                        <div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>
+                    <?php endif; ?>
+
+                    <div class="<?php echo !$tiene_acceso ? 'blur-content' : ''; ?>">
                         <div class="preview-container">
                             <?php
                             $ruta = htmlspecialchars($row['archivo_pdf']);
@@ -124,9 +165,7 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                                 echo "<iframe src='$ruta#toolbar=0&navpanes=0&scrollbar=0&view=Fit' style='width:100%; height:100%; border:none;' loading='lazy'></iframe>";
                                 echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
                             } else {
-                                $icon = ($ext == 'doc' || $ext == 'docx') ? "fa-file-word" : "fa-book";
-                                $color = ($ext == 'doc' || $ext == 'docx') ? "#2563eb" : "#94a3b8";
-                                echo "<i class='fa-solid $icon' style='font-size:5rem; color:$color;'></i>";
+                                echo "<i class='fa-solid fa-file-lines' style='font-size:5rem; color:#cbd5e1;'></i>";
                             }
                             ?>
                         </div>
@@ -138,13 +177,22 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                             <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline" style="margin-top:10px;">Ver Detalles</a>
                         </div>
                     </div>
+
                     <?php if (!$isLoggedIn): ?>
                         <div class="locked-overlay">
                             <i class="fa-solid fa-lock" style="font-size:2rem; margin-bottom:10px;"></i>
                             <p>Inicia sesión para ver.</p>
                             <a href="login.php" class="btn-login">Ingresar</a>
                         </div>
+                    <?php elseif (!$tiene_acceso && $es_contenido_premium): ?>
+                        <div class="locked-overlay">
+                            <i class="fa-solid fa-crown" style="font-size:2rem; color:#eab308; margin-bottom:10px;"></i>
+                            <h4 style="margin:0;">Contenido Exclusivo</h4>
+                            <p style="font-size:0.8rem;">Solo para miembros Premium.</p>
+                            <a href="premiun.php" class="btn-login" style="background:#eab308;">Mejorar Plan</a>
+                        </div>
                     <?php endif; ?>
+
                 </div>
             <?php endwhile; ?>
         </div>

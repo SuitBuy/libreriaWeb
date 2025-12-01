@@ -2,25 +2,16 @@
 session_start();
 include 'db.php';
 
-if (!isset($_SESSION['uid'])) {
-    header("Location: login.php");
-    exit;
-}
+if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
 $uid = $_SESSION['uid'];
 
-// --- LÓGICA 1: ELIMINAR PUBLICACIÓN ---
+// BORRAR PUBLICACIÓN
 if (isset($_GET['borrar'])) {
     $id_recurso = (int)$_GET['borrar'];
-
-    // Verificar propiedad y obtener archivo
     $check = mysqli_query($conn, "SELECT id, archivo_pdf FROM recursos WHERE id = $id_recurso AND usuario_id = $uid");
-
+    
     if ($row = mysqli_fetch_assoc($check)) {
-        // BORRAR DEL DISCO
-        if (file_exists($row['archivo_pdf'])) {
-            unlink($row['archivo_pdf']);
-        }
-        // BORRAR DE BD
+        if (file_exists($row['archivo_pdf'])) { unlink($row['archivo_pdf']); }
         mysqli_query($conn, "DELETE FROM recursos WHERE id = $id_recurso");
         header("Location: perfil.php?msg=deleted");
     }
