@@ -17,8 +17,6 @@ if (isset($_GET['id'])) {
         if ($ext == 'gif') $mime = 'image/gif';
         if ($ext == 'doc') $mime = 'application/msword';
         if ($ext == 'docx') $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-
-        // Enviar encabezado y datos
         header("Content-Type: $mime");
         echo $row['datos'];
     }
