@@ -26,7 +26,6 @@ if (isset($_GET['comprar']) && isset($_SESSION['uid'])) {
             font-size: 3rem;
             margin-bottom: 10px;
             background: -webkit-linear-gradient(#1e293b, #334155);
-            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
