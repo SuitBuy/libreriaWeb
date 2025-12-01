@@ -2,19 +2,27 @@
 session_start();
 include 'db.php';
 
-if (!isset($_GET['id'])) { header("Location: index.php"); exit; }
-if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
+if (!isset($_GET['id'])) {
+    header("Location: index.php");
+    exit;
+}
+if (!isset($_SESSION['uid'])) {
+    header("Location: login.php");
+    exit;
+}
 
 $id = mysqli_real_escape_string($conn, $_GET['id']);
 
-if (!isset($_SESSION['recursos_vistos'])) { $_SESSION['recursos_vistos'] = array(); }
+if (!isset($_SESSION['recursos_vistos'])) {
+    $_SESSION['recursos_vistos'] = array();
+}
 if (!in_array($id, $_SESSION['recursos_vistos'])) {
     mysqli_query($conn, "UPDATE recursos SET vistas = vistas + 1 WHERE id = $id");
     $_SESSION['recursos_vistos'][] = $id;
 }
 
-// JOIN para obtener nombre del usuario
-$query = "SELECT r.*, u.nombre AS subido_por 
+// CONSULTA OPTIMIZADA (NO selecciona 'datos')
+$query = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.descripcion, r.archivo_pdf, r.tipo_archivo, r.vistas, u.nombre AS subido_por 
           FROM recursos r 
           JOIN usuarios u ON r.usuario_id = u.id 
           WHERE r.id=$id";
@@ -30,47 +38,53 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title><?php echo $row['titulo']; ?> - Urban Canvas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
-    <style>iframe { display: block; background: #fff; }</style>
+    <style>
+        iframe {
+            display: block;
+            background: #fff;
+        }
+    </style>
 </head>
+
 <body>
     <nav class="navbar">
-        <div class="logo"><div class="logo-icon"></div>Urban Canvas</div>
+        <div class="logo">
+            <div class="logo-icon"></div>Urban Canvas
+        </div>
         <a href="index.php">← Volver</a>
     </nav>
 
     <div class="container" style="margin-top:20px; max-width: 95%;">
         <div style="background:white; border-radius:30px; padding:30px; box-shadow:var(--card-shadow); display:flex; gap:30px; flex-wrap:wrap;">
-            
+
             <div style="flex:3; border-radius:20px; overflow:hidden; border:1px solid #e2e8f0; min-height:850px; background:white;">
                 <?php
-                    $ruta_visual = "ver.php?id=" . $row['id'];
-                    $ext = strtolower($row['tipo_archivo']);
+                $ruta_visual = "ver.php?id=" . $row['id'];
+                $ext = strtolower($row['tipo_archivo']);
 
-                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                        echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; background:#f8fafc;'>
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    echo "<div style='display:flex; align-items:center; justify-content:center; height:100%; background:#f8fafc;'>
                                 <img src='$ruta_visual' style='max-width:100%; max-height:850px; object-fit:contain;'>
                               </div>";
-                    } 
-                    elseif ($ext == 'pdf') {
-                        $pdf_limpio = $ruta_visual . "#toolbar=0&navpanes=0&scrollbar=0&view=FitH";
-                        echo "<iframe src='$pdf_limpio' width='100%' height='100%' style='border:none; min-height:850px;'></iframe>";
-                    } 
-                    elseif (in_array($ext, ['doc', 'docx'])) {
-                        echo "<div style='display:flex; flex-direction:column; align-items:center; justify-content:center; height:850px; background:#f8fafc; color:#2563eb;'>
+                } elseif ($ext == 'pdf') {
+                    $pdf_limpio = $ruta_visual . "#toolbar=0&navpanes=0&scrollbar=0&view=FitH";
+                    echo "<iframe src='$pdf_limpio' width='100%' height='100%' style='border:none; min-height:850px;'></iframe>";
+                } elseif (in_array($ext, ['doc', 'docx'])) {
+                    echo "<div style='display:flex; flex-direction:column; align-items:center; justify-content:center; height:850px; background:#f8fafc; color:#2563eb;'>
                                 <i class='fa-solid fa-file-word' style='font-size:8rem; margin-bottom:20px;'></i>
                                 <h3 style='color:#1e293b;'>Vista previa Word no disponible</h3>
                                 <p style='color:#64748b;'>Usa el botón de descarga.</p>
                               </div>";
-                    } 
-                    else {
-                        echo "<div style='display:flex; align-items:center; justify-content:center; height:850px; background:#f8fafc;'>
+                } else {
+                    echo "<div style='display:flex; align-items:center; justify-content:center; height:850px; background:#f8fafc;'>
                                 <i class='fa-regular fa-file' style='font-size:8rem; color:#cbd5e1;'></i>
                               </div>";
-                    }
+                }
                 ?>
             </div>
 
@@ -78,7 +92,7 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
                 <div style="margin-bottom:auto;">
                     <span class="tag" style="margin-bottom:15px; display:inline-block; font-size:1rem;"><?php echo $row['categoria']; ?></span>
                     <h1 style="font-size:2.5rem; margin:10px 0; line-height:1.2;"><?php echo $row['titulo']; ?></h1>
-                    
+
                     <div style="margin-bottom:25px; font-size:1.1rem;">
                         <div style="color:#64748b; margin-bottom:5px;">
                             <i class="fa-solid fa-pen-nib"></i> Autor Obra: <strong><?php echo $row['autor_nombre']; ?></strong>
@@ -92,11 +106,11 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
                         <h4 style="margin-top:0; color:#1e293b;">Descripción:</h4>
                         <?php echo nl2br($row['descripcion']); ?>
                     </div>
-                    
+
                     <a href="<?php echo $ruta_visual; ?>" download="<?php echo $row['archivo_pdf']; ?>" target="_blank" class="btn-login" style="padding:20px 30px; font-size:1.2rem; display:block; text-align:center; margin-bottom:20px;">
                         <i class="fa-solid fa-download"></i> Descargar Archivo
                     </a>
-                    
+
                     <div style="text-align:center; color:#64748b;">
                         <i class="fa-solid fa-eye"></i> <?php echo $row['vistas']; ?> visualizaciones
                     </div>
@@ -117,11 +131,11 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
                     </form>
                 </div>
                 <div style="flex:1; overflow-y:auto; max-height:400px; padding-right:5px;">
-                    <?php while($c = mysqli_fetch_assoc($comentarios)): ?>
+                    <?php while ($c = mysqli_fetch_assoc($comentarios)): ?>
                         <div style="background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #f1f5f9;">
                             <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
                                 <strong style="color:#0f172a; font-size:0.9rem;"><?php echo $c['nombre']; ?></strong>
-                                <span style="color:#eab308; font-size:0.8rem;"><?php for($i=0; $i<$c['valoracion']; $i++) echo '<i class="fa-solid fa-star"></i>'; ?></span>
+                                <span style="color:#eab308; font-size:0.8rem;"><?php for ($i = 0; $i < $c['valoracion']; $i++) echo '<i class="fa-solid fa-star"></i>'; ?></span>
                             </div>
                             <p style="margin:5px 0; color:#475569; font-size:0.9rem;"><?php echo $c['comentario']; ?></p>
                         </div>
@@ -131,4 +145,5 @@ $comentarios = mysqli_query($conn, "SELECT c.*, u.nombre FROM comentarios c JOIN
         </div>
     </div>
 </body>
+
 </html>
