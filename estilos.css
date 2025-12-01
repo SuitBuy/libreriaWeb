@@ -250,9 +250,7 @@ body {
 .book-body { padding: 20px; }
 .tag { background: #e0f2fe; color: #0284c7; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
 
-/* =========================================
-   PRECIOS (PREMIUM)
-   ========================================= */
+
 .pricing-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 40px; max-width: 900px; margin: 0 auto; align-items: center;
