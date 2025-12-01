@@ -41,21 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // --- GESTIÓN DE ARCHIVO EN VOLUMEN ---
         $nombreOriginal = $_FILES["archivo"]["name"];
         $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
-
-        // Nombre único para evitar sobrescribir
         $nombreFinal = time() . "_" . preg_replace("/[^a-zA-Z0-9\.]/", "", $nombreOriginal);
-        $rutaDestino = "uploads/" . $nombreFinal; // Guardamos en la carpeta uploads
+        $rutaDestino = "uploads/" . $nombreFinal;
 
-        // Crear carpeta si no existe
         if (!file_exists("uploads")) {
             mkdir("uploads", 0777, true);
         }
-
         $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
         if (in_array($ext, $permitidos)) {
             if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
-                // Guardamos la RUTA en la BD
                 $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo, es_premium, fecha_subida) 
                         VALUES ('$titulo', '$autor', '$cat', '$desc', '$rutaDestino', $uid, 'pendiente', '$ext', $es_contenido_premium, NOW())";
 
@@ -79,23 +74,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <head>
     <title>Subir - Urban Canvas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
 </head>
 
 <body style="background:#f1f5f9;">
     <nav class="navbar">
-        <div class="logo">Urban Canvas</div><a href="index.php">Cancelar</a>
+        <div class="logo">
+            <div class="logo-icon"></div>Urban Canvas
+        </div>
+        <a href="index.php">Cancelar</a>
     </nav>
+
     <div class="auth-wrapper">
         <h2>Subir Aporte</h2>
-        <?php if ($es_premium): ?><p style="color:#10b981;">✨ Eres Premium: Subidas Ilimitadas</p><?php endif; ?>
+
+        <?php if ($es_premium): ?>
+            <p style="color:#10b981; text-align:center; margin-bottom:20px; font-weight:600;">
+                <i class="fa-solid fa-star"></i> Eres Premium: Subidas Ilimitadas
+            </p>
+        <?php endif; ?>
+
         <?php if (isset($error)) echo "<div class='alert alert-error'>$error</div>"; ?>
 
         <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="titulo" class="input-field" placeholder="Título" required>
-            <input type="text" name="autor" class="input-field" placeholder="Autor" required>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="titulo" class="input-field" placeholder="Título de la obra" required>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="autor" class="input-field" placeholder="Autor original" required>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr <?php echo $es_admin ? '1fr' : ''; ?>; gap:15px; margin-bottom: 15px;">
                 <select name="categoria" class="input-field">
                     <option>Ciencias</option>
                     <option>Arte</option>
@@ -103,19 +115,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <option>Ingeniería</option>
                     <option>Otros</option>
                 </select>
+
                 <?php if ($es_admin): ?>
-                    <div style="display:flex; align-items:center; background:#fff; padding:0 10px; border-radius:12px;">
-                        <input type="checkbox" name="es_premium" id="prem" style="margin-right:10px;">
-                        <label for="prem" style="color:#eab308; font-weight:bold;">Premium ⭐</label>
+                    <!-- Checkbox Premium Estilizado -->
+                    <div class="premium-option">
+                        <input type="checkbox" name="es_premium" id="prem">
+                        <label for="prem">Premium ⭐</label>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <textarea name="desc" class="input-field" placeholder="Descripción..." rows="3"></textarea>
-            <div style="margin:20px 0; border:2px dashed #ccc; padding:20px; text-align:center;">
-                <input type="file" name="archivo" required>
+            <textarea name="desc" class="input-field" placeholder="Añade una descripción..." rows="4"></textarea>
+
+            <!-- Área de Archivo Estilizada -->
+            <div class="file-upload-area">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 10px;"></i>
+                <p style="margin: 0 0 10px 0; color: #64748b; font-size: 0.9rem;">Arrastra o selecciona tu archivo</p>
+                <input type="file" name="archivo" required style="display: inline-block; margin: 0 auto;">
             </div>
-            <button type="submit" class="btn-login" style="width:100%;">Subir</button>
+
+            <button type="submit" class="btn-submit">Publicar Aporte</button>
         </form>
     </div>
 </body>

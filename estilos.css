@@ -2,15 +2,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
-    /* Paleta Urban Canvas */
-    --primary-grad: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    /* Paleta de Colores Urban Canvas */
+    --primary-grad: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); /* Azul Marca */
+    --accent-grad: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); /* Verde Acción */
+    --dark-bg: #0f172a; /* Azul Noche */
     --text-dark: #1e293b;
     --text-gray: #64748b;
-    --bg-light: #ffffff;
+    --bg-light: #f1f5f9;
     --card-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
-    --radius-xl: 30px;
-    --radius-md: 20px;
+    --radius-xl: 24px;
+    --radius-md: 16px;
     --radius-pill: 50px;
+    
+    /* Colores específicos */
+    --green-btn: #84cc16;
+    --green-hover: #65a30d;
+    --premium-gold: #eab308;
 }
 
 * { box-sizing: border-box; }
@@ -23,49 +30,119 @@ body {
     line-height: 1.6;
 }
 
-/* --- NAVBAR --- */
+/* =========================================
+   NAVBAR (OSCURO PRO)
+   ========================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 5%;
-    background: white;
+    padding: 1rem 5%;
+    background: var(--dark-bg);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    color: #0f172a;
+    color: white;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .logo-icon {
-    width: 35px; height: 35px;
+    width: 32px; height: 32px;
     background: var(--primary-grad);
     border-radius: 8px;
     border-bottom-right-radius: 0;
 }
 
-.nav-links { display: flex; align-items: center; gap: 30px; }
+.nav-links { display: flex; align-items: center; gap: 25px; }
 .nav-links a {
     text-decoration: none;
-    color: var(--text-gray);
+    color: #94a3b8; /* Gris suave */
     font-weight: 500;
     transition: 0.3s;
 }
-.nav-links a:hover { color: #0ea5e9; }
+.nav-links a:hover { color: white; }
 
-/* Botones */
-.btn-login {
-    background: #84cc16;
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero-wrapper { padding: 20px 5%; margin-bottom: 40px; }
+.hero {
+    background: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 450px;
+    border-radius: var(--radius-xl);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     color: white;
-    padding: 10px 28px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+.hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.5) 100%);
+    z-index: 1;
+}
+.hero-content { position: relative; z-index: 2; max-width: 800px; padding: 20px; width: 100%; }
+.hero h1 { 
+    font-size: 3.5rem; margin-bottom: 15px; line-height: 1.1; 
+    font-weight: 800; letter-spacing: -1px; 
+}
+.hero p { font-size: 1.1rem; color: #cbd5e1; margin-bottom: 30px; }
+
+/* =========================================
+   BUSCADOR (ESTILO CÁPSULA)
+   ========================================= */
+.search-container {
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 50px;
+    display: flex;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+    align-items: center;
+}
+
+.search-input {
+    flex-grow: 1; border: none; padding: 15px 25px; font-size: 1rem;
+    border-radius: 50px; outline: none; background: transparent; color: #333;
+}
+.search-select {
+    border: none; border-left: 1px solid #e2e8f0; padding: 0 25px;
+    color: #64748b; outline: none; background: transparent; 
+    font-weight: 500; cursor: pointer; height: 30px;
+}
+.search-btn {
+    background: var(--green-btn); color: white; border: none;
+    width: 55px; height: 55px; border-radius: 50%; font-size: 1.2rem;
+    cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3); margin-left: 10px;
+}
+.search-btn:hover { background: var(--green-hover); transform: scale(1.05); }
+
+/* =========================================
+   BOTONES Y UI ELEMENTS
+   ========================================= */
+/* Botón Login/Acción Navbar */
+.btn-login {
+    background: var(--primary-grad);
+    color: white;
+    padding: 10px 25px;
     border-radius: var(--radius-pill);
     font-weight: 600;
     border: none;
@@ -73,9 +150,11 @@ body {
     text-decoration: none;
     display: inline-block;
     transition: 0.2s;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }
-.btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3); }
+.btn-login:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
+/* Botón Secundario (Outline) */
 .btn-outline {
     display: block; width: 100%; text-align: center;
     margin-top: 15px; padding: 10px 0;
@@ -83,86 +162,134 @@ body {
     text-decoration: none; color: var(--text-dark); font-weight: 600;
     transition: 0.3s;
 }
-.btn-outline:hover { border-color: #0ea5e9; color: #0ea5e9; }
+.btn-outline:hover { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
 
-/* --- HERO & SECTIONS --- */
-.hero-wrapper { padding: 10px 5%; margin-bottom: 40px; }
-.hero {
-    background: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
-    background-size: cover;
-    background-position: center;
-    height: 450px;
-    border-radius: var(--radius-xl);
-    position: relative;
+/* Botón Hero Acción (Verde Grande) */
+.hero-action-btn {
+    background: var(--accent-grad);
+    color: white; padding: 15px 40px; border-radius: var(--radius-pill);
+    font-size: 1.1rem; font-weight: 700; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 10px 30px rgba(132, 204, 22, 0.4); transition: all 0.3s ease;
+}
+.hero-action-btn:hover { transform: translateY(-4px) scale(1.05); }
+
+/* =========================================
+   FORMULARIOS (LOGIN, REGISTRO, UPLOAD)
+   ========================================= */
+.auth-wrapper {
+    max-width: 480px;
+    margin: 60px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+    text-align: left;
+}
+.auth-wrapper h2 {
+    color: #0f172a; font-size: 1.8rem; margin-bottom: 20px; font-weight: 800; text-align: center;
+}
+
+/* Inputs Estilizados */
+.input-field {
+    width: 100%; padding: 16px 20px; background: #f8fafc;
+    border: 1px solid transparent; border-radius: 12px;
+    font-size: 0.95rem; color: #334155; outline: none;
+    transition: 0.3s; margin-bottom: 0;
+}
+.input-field:focus {
+    background: white; border-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+/* Checkbox Premium */
+.premium-option {
     display: flex; align-items: center; justify-content: center;
-    text-align: center; color: white; overflow: hidden;
+    background: #fffbeb; border: 2px solid #fcd34d;
+    border-radius: 12px; padding: 0 15px; height: 100%; cursor: pointer;
 }
-.hero-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(120deg, rgba(79,172,254,0.8) 0%, rgba(0,0,0,0) 60%);
-    z-index: 2;
-}
-.hero-content { position: relative; z-index: 3; max-width: 700px; padding: 20px; }
-.hero h1 { font-size: 3rem; margin-bottom: 10px; line-height: 1.1; }
+.premium-option:hover { background: #fef3c7; }
+.premium-option label { font-weight: 700; color: #b45309; cursor: pointer; font-size: 0.9rem; margin-left: 8px; }
+.premium-option input { accent-color: #d97706; width: 18px; height: 18px; }
 
-.search-container {
-    background: white; padding: 8px; border-radius: var(--radius-pill);
-    display: flex; width: 100%; max-width: 650px; margin: 0 auto;
+/* Zona de Carga de Archivo */
+.upload-zone {
+    border: 2px dashed #cbd5e1; border-radius: 12px;
+    padding: 30px 20px; text-align: center; background: #f8fafc;
+    cursor: pointer; transition: 0.3s; color: #64748b; font-size: 0.9rem; position: relative;
 }
-.search-input { flex-grow: 1; border: none; padding: 15px 25px; outline: none; border-radius: var(--radius-pill); }
-.search-select { border: none; padding: 0 20px; border-left: 1px solid #eee; background: transparent; }
-.search-btn { background: #84cc16; color: white; border: none; padding: 12px 35px; border-radius: var(--radius-pill); cursor: pointer; }
+.upload-zone:hover { border-color: #0ea5e9; background: #f0f9ff; color: #0ea5e9; }
+/* Botón Submit Formulario */
+.btn-submit-upload {
+    width: 100%; background: var(--green-btn); color: white;
+    padding: 16px; border-radius: 14px; font-size: 1rem; font-weight: 700;
+    border: none; cursor: pointer; transition: 0.2s; margin-top: 15px;
+}
+.btn-submit-upload:hover { background: var(--green-hover); transform: translateY(-2px); }
 
-/* --- CARDS & GRID --- */
+/* =========================================
+   GRID DE LIBROS & TARJETAS
+   ========================================= */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
-.section-title { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; color: #334155; }
-
-.collections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 60px; }
-.collection-card { padding: 40px 20px; border-radius: var(--radius-md); text-align: center; cursor: pointer; color: #1e293b; box-shadow: var(--card-shadow); }
-.col-green { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-.col-blue { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
-.col-white { background: white; border: 1px solid #f1f5f9; }
-.collection-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+.section-title { 
+    font-size: 1.8rem; margin-bottom: 30px; font-weight: 800; color: #1e293b; 
+    position: relative; display: inline-block; 
+}
+.section-title::after {
+    content: ''; position: absolute; bottom: -5px; left: 0; width: 60px; height: 4px;
+    background: var(--primary-grad); border-radius: 2px;
+}
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+
 .book-card {
-    background: white; border-radius: var(--radius-md);
-    overflow: hidden; box-shadow: var(--card-shadow);
-    transition: 0.3s; border: 1px solid #f8fafc;
-    display: flex; flex-direction: column; position: relative;
+    background: white; border-radius: 20px; overflow: hidden;
+    box-shadow: var(--card-shadow); transition: 0.3s; border: 1px solid #fff;
 }
-.book-card:hover { transform: translateY(-5px); }
-.book-img { height: 180px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
-.book-body { padding: 25px; flex-grow: 1; }
-.tag { background: #e0f2fe; color: #0284c7; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+.book-card:hover { transform: translateY(-8px); border-color: #e2e8f0; }
 
-/* --- AUTH & FORMS --- */
-.auth-wrapper { max-width: 450px; margin: 60px auto; background: white; padding: 40px; border-radius: var(--radius-xl); box-shadow: var(--card-shadow); }
-.input-field { width: 100%; padding: 15px; background: #f8fafc; border: none; border-radius: 12px; margin-bottom: 15px; outline: none; }
+.book-body { padding: 20px; }
+.tag { background: #e0f2fe; color: #0284c7; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
 
-/* --- EFECTO BLUR & SEGURIDAD --- */
-.blur-content {
-    filter: blur(6px);
-    pointer-events: none;
-    user-select: none;
-    opacity: 0.5;
+/* =========================================
+   PRECIOS (PREMIUM)
+   ========================================= */
+.pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px; max-width: 900px; margin: 0 auto; align-items: center;
 }
-.locked-overlay {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px; border-radius: 15px;
-    text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    z-index: 10; width: 85%;
+.plan-card {
+    background: white; padding: 40px; border-radius: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08); transition: 0.3s;
+    border: 1px solid #f1f5f9; position: relative; text-align: left;
 }
+.plan-card:hover { transform: translateY(-10px); }
+.plan-card.featured { border: 2px solid #0ea5e9; transform: scale(1.05); z-index: 2; }
+.price { font-size: 3.5rem; font-weight: 800; color: #1e293b; margin-bottom: 20px; line-height: 1; }
+.plan-features li { margin-bottom: 15px; color: #475569; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; }
 
-/* --- BADGES ADMIN --- */
-.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; color: white; font-weight: bold; text-transform: uppercase; }
+/* =========================================
+   UTILIDADES & EXTRAS
+   ========================================= */
+/* Etiquetas y Estados */
+.status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; color: white; font-weight: bold; text-transform: uppercase; }
 .st-pendiente { background: #f59e0b; }
 .st-aprobado { background: #10b981; }
+.st-rechazado { background: #ef4444; }
+.premium-badge { position:absolute; top:15px; right:15px; background:linear-gradient(45deg, #fbbf24, #d97706); color:white; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:800; z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.uploader-tag { font-size: 0.75rem; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; }
 
-/* --- FOOTER --- */
-footer { background: #1e293b; color: #94a3b8; padding: 40px 0; margin-top: 80px; text-align: center; }
-.alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+/* Bloqueo y Blur */
+.blur-content { filter: blur(6px); pointer-events: none; user-select: none; opacity: 0.5; }
+.locked-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.98); padding: 30px; border-radius: 20px;
+    text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 10; width: 85%;
+}
+
+/* Alertas */
+.alert { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 600; }
 .alert-error { background: #fee2e2; color: #b91c1c; }
 .alert-success { background: #dcfce7; color: #15803d; }
+
+/* Footer */
+footer { background: var(--dark-bg); color: #94a3b8; padding: 40px 0; margin-top: 80px; text-align: center; }
