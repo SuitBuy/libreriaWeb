@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </nav>
     <div class="auth-wrapper">
         <h2 style="text-align:center;">Bienvenido</h2>
-        <p style="text-align:center; color:#64748b; margin-bottom:30px;">Accede a la biblioteca colaborativa</p>
+        <p style="text-align:center; color:#64748b; margin-bottom:30px;">Inicia Sesión</p>
         
         <?php if($error) echo "<div class='alert alert-error'>$error</div>"; ?>
         <?php if(isset($_GET['success'])) echo "<div class='alert alert-success'>¡Cuenta creada! Inicia sesión.</div>"; ?>
