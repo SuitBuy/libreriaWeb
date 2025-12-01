@@ -11,18 +11,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desc = mysqli_real_escape_string($conn, $_POST['desc']);
     $uid = $_SESSION['uid'];
     
-    // Obtener información del archivo
+    // Obtener info del archivo
     $nombreOriginal = mysqli_real_escape_string($conn, $_FILES["archivo"]["name"]);
     $ext = strtolower(pathinfo($_FILES["archivo"]["name"], PATHINFO_EXTENSION));
     
-    // LEER EL ARCHIVO EN BINARIO (Para guardarlo en BD)
+    // --- CAMBIO CLAVE: LEER EL ARCHIVO PARA GUARDARLO EN BD ---
     $contenido = addslashes(file_get_contents($_FILES['archivo']['tmp_name'])); 
     
     $permitidos = array("pdf", "doc", "docx", "jpg", "jpeg", "png");
 
     if (in_array($ext, $permitidos)) {
-        // Insertamos los datos BINARIOS en la columna 'datos'
-        // 'archivo_pdf' ahora solo guardará el nombre original para referencia
+        // Insertamos en la columna 'datos'
         $sql = "INSERT INTO recursos (titulo, autor_nombre, categoria, descripcion, archivo_pdf, usuario_id, estado, tipo_archivo, datos) 
                 VALUES ('$titulo', '$autor', '$cat', '$desc', '$nombreOriginal', $uid, 'pendiente', '$ext', '$contenido')";
         
@@ -30,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: index.php?msg=uploaded"); 
             exit;
         } else {
-            $error = "Error en base de datos: " . mysqli_error($conn);
+            $error = "Error en BD: " . mysqli_error($conn);
         }
     } else {
         $error = "Formato no permitido.";
@@ -50,11 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <a href="index.php">Cancelar</a>
     </nav>
     <div class="auth-wrapper" style="max-width:600px;">
-        <h2>Publicar Aporte (Base de Datos)</h2>
-        <p style="color:#64748b; margin-bottom:20px;">Tu archivo se guardará de forma segura en la nube.</p>
-        
+        <h2>Publicar Aporte</h2>
+        <p style="color:#64748b; margin-bottom:20px;">Tu archivo se guardará seguro en la base de datos.</p>
         <?php if(isset($error)) echo "<div class='alert alert-error'>$error</div>"; ?>
-
         <form method="POST" enctype="multipart/form-data">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                 <input type="text" name="titulo" class="input-field" placeholder="Título" required>
@@ -63,14 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <select name="categoria" class="input-field">
                 <option>Ciencias</option><option>Arte</option><option>Historia</option><option>Ingeniería</option><option>Otros</option>
             </select>
-            <textarea name="desc" class="input-field" placeholder="Descripción breve..." rows="3"></textarea>
-            
+            <textarea name="desc" class="input-field" placeholder="Descripción..." rows="3"></textarea>
             <div style="margin:20px 0; padding:20px; border:2px dashed #cbd5e1; border-radius:15px; text-align:center;">
-                <p>Formatos: PDF, DOC, JPG, PNG</p>
+                <p>Soporta: PDF, DOC, JPG, PNG</p>
                 <input type="file" name="archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
             </div>
-            
-            <button type="submit" class="btn-login" style="width:100%;">Enviar a Revisión</button>
+            <button type="submit" class="btn-login" style="width:100%;">Enviar</button>
         </form>
     </div>
 </body>

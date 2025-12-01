@@ -2,9 +2,7 @@
 session_start();
 include 'db.php';
 
-// FILTRO
 $where = "r.estado = 'aprobado'";
-
 if (isset($_GET['q']) && $_GET['q'] != '') {
     $q = mysqli_real_escape_string($conn, $_GET['q']);
     $where .= " AND (r.titulo LIKE '%$q%' OR r.autor_nombre LIKE '%$q%' OR u.nombre LIKE '%$q%')";
@@ -14,8 +12,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 'Todas') {
     $where .= " AND r.categoria = '$c'";
 }
 
-// --- CORRECCIÓN CRÍTICA: NO USAR SELECT * PARA EVITAR CARGAR EL BLOB ---
-// Seleccionamos solo las columnas ligeras. NO seleccionamos 'datos'.
+// --- OPTIMIZACIÓN: NO PEDIR LA COLUMNA 'datos' AQUÍ ---
 $sql = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.archivo_pdf, r.tipo_archivo, r.vistas, u.nombre AS subido_por 
         FROM recursos r 
         JOIN usuarios u ON r.usuario_id = u.id 
@@ -23,12 +20,6 @@ $sql = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.archivo_pdf, r.tip
         ORDER BY r.id DESC";
 
 $libros = mysqli_query($conn, $sql);
-
-// Verificar si hubo error en la consulta (para debug)
-if (!$libros) {
-    die("Error en la consulta: " . mysqli_error($conn));
-}
-
 $isLoggedIn = isset($_SESSION['uid']);
 $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
 ?>
@@ -118,7 +109,7 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                 <h1>Comparte Conocimiento.<br>Sin Límites.</h1>
                 <p>Únete a la comunidad académica más colaborativa.</p>
                 <form method="GET" class="search-container">
-                    <input type="text" name="q" class="search-input" placeholder="Buscar libros, autores, usuarios...">
+                    <input type="text" name="q" class="search-input" placeholder="Buscar...">
                     <select name="cat" class="search-select">
                         <option>Todas</option>
                         <option>Ciencias</option>
@@ -146,9 +137,9 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                             $ext = strtolower($row['tipo_archivo']);
 
                             if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                                echo "<img src='$ruta_visual' class='preview-img'>";
+                                echo "<img src='$ruta_visual' class='preview-img' loading='lazy'>";
                             } elseif ($ext == 'pdf') {
-                                echo "<iframe src='$ruta_visual#toolbar=0&navpanes=0&scrollbar=0&view=Fit' class='preview-pdf'></iframe>";
+                                echo "<iframe src='$ruta_visual#toolbar=0&navpanes=0&scrollbar=0&view=Fit' class='preview-pdf' loading='lazy'></iframe>";
                                 echo "<div class='click-shield' onclick=\"window.location='detalle.php?id={$row['id']}'\"></div>";
                             } else {
                                 $icon = ($ext == 'doc' || $ext == 'docx') ? "fa-file-word" : "fa-book";
@@ -159,13 +150,9 @@ $isAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] == 'admin';
                         </div>
                         <div class="book-body">
                             <span class="tag"><?php echo $row['categoria']; ?></span>
-                            <h3 style="margin:10px 0 5px 0; font-size:1.1rem;"><?php echo $row['titulo']; ?></h3>
+                            <h3 style="margin:10px 0 5px 0; font-size:1.1rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo $row['titulo']; ?></h3>
                             <p style="color:#64748b; font-size:0.9rem; margin:0;">Autor: <?php echo $row['autor_nombre']; ?></p>
-
-                            <div class="uploader-tag">
-                                <i class="fa-solid fa-user-pen"></i> Subido por: <strong><?php echo $row['subido_por']; ?></strong>
-                            </div>
-
+                            <div class="uploader-tag"><i class="fa-solid fa-user-pen"></i> Subido por: <strong><?php echo $row['subido_por']; ?></strong></div>
                             <a href="detalle.php?id=<?php echo $row['id']; ?>" class="btn-outline" style="margin-top:15px;">Ver Detalles</a>
                         </div>
                     </div>

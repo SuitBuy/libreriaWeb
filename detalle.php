@@ -21,11 +21,9 @@ if (!in_array($id, $_SESSION['recursos_vistos'])) {
     $_SESSION['recursos_vistos'][] = $id;
 }
 
-// CONSULTA OPTIMIZADA (NO selecciona 'datos')
+// CONSULTA OPTIMIZADA
 $query = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.descripcion, r.archivo_pdf, r.tipo_archivo, r.vistas, u.nombre AS subido_por 
-          FROM recursos r 
-          JOIN usuarios u ON r.usuario_id = u.id 
-          WHERE r.id=$id";
+          FROM recursos r JOIN usuarios u ON r.usuario_id = u.id WHERE r.id=$id";
 $row = mysqli_fetch_assoc(mysqli_query($conn, $query));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

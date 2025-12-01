@@ -27,30 +27,21 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     }
 }
 
-// --- CONSULTAS OPTIMIZADAS (SIN PEDIR 'datos') ---
-
-// 1. Pendientes
+// CONSULTAS OPTIMIZADAS (NO SELECT *)
 $query_pendientes = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.archivo_pdf, r.estado, u.nombre AS nombre_uploader 
-                     FROM recursos r 
-                     JOIN usuarios u ON r.usuario_id = u.id 
-                     WHERE r.estado = 'pendiente' 
-                     ORDER BY r.id DESC";
+                     FROM recursos r JOIN usuarios u ON r.usuario_id = u.id 
+                     WHERE r.estado = 'pendiente' ORDER BY r.id DESC";
 $pendientes = mysqli_query($conn, $query_pendientes);
 
-// 2. Aprobados
 $where_aprobados = "r.estado = 'aprobado'";
 $search_term = "";
-
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_term = mysqli_real_escape_string($conn, $_GET['search']);
     $where_aprobados .= " AND (r.titulo LIKE '%$search_term%' OR r.autor_nombre LIKE '%$search_term%' OR r.categoria LIKE '%$search_term%' OR u.nombre LIKE '%$search_term%')";
 }
-
 $query_aprobados = "SELECT r.id, r.titulo, r.autor_nombre, r.categoria, r.archivo_pdf, r.estado, u.nombre AS nombre_uploader 
-                    FROM recursos r 
-                    JOIN usuarios u ON r.usuario_id = u.id 
-                    WHERE $where_aprobados 
-                    ORDER BY r.id DESC";
+                    FROM recursos r JOIN usuarios u ON r.usuario_id = u.id 
+                    WHERE $where_aprobados ORDER BY r.id DESC";
 $aprobados = mysqli_query($conn, $query_aprobados);
 ?>
 <!DOCTYPE html>
@@ -117,7 +108,6 @@ $aprobados = mysqli_query($conn, $query_aprobados);
     </nav>
 
     <div class="container" style="margin-top:40px;">
-
         <div class="admin-header" style="background:var(--primary-grad);">
             <h2 style="margin:0;"><i class="fa-solid fa-clock"></i> Pendientes de Revisión (<?php echo mysqli_num_rows($pendientes); ?>)</h2>
         </div>
@@ -135,9 +125,7 @@ $aprobados = mysqli_query($conn, $query_aprobados);
                             <span class="status-badge st-pendiente">Pendiente</span>
                             <h3 style="margin-top:10px; margin-bottom: 5px;"><?php echo $row['titulo']; ?></h3>
                             <p style="font-size:0.9rem; margin:0;">Autor Obra: <strong><?php echo $row['autor_nombre']; ?></strong></p>
-                            <div class="uploader-info">
-                                <i class="fa-solid fa-user-upload"></i> Subido por: <strong><?php echo $row['nombre_uploader']; ?></strong>
-                            </div>
+                            <div class="uploader-info"><i class="fa-solid fa-user-upload"></i> Subido por: <strong><?php echo $row['nombre_uploader']; ?></strong></div>
                             <div style="margin-top:15px; display:flex; gap:5px;">
                                 <a href="ver.php?id=<?php echo $row['id']; ?>" target="_blank" class="action-btn" style="background:#64748b; color:white; flex:1; text-align:center;">Ver</a>
                                 <a href="admin_panel.php?action=approve&id=<?php echo $row['id']; ?>" class="action-btn" style="background:#10b981; color:white; flex:1; text-align:center;"><i class="fa-solid fa-check"></i></a>
@@ -173,9 +161,7 @@ $aprobados = mysqli_query($conn, $query_aprobados);
                     <div class="book-body">
                         <h3 style="font-size:1.1rem; margin-bottom:5px;"><?php echo $row['titulo']; ?></h3>
                         <p style="color:#64748b; font-size:0.9rem; margin-bottom: 5px;">Autor: <?php echo $row['autor_nombre']; ?></p>
-                        <div class="uploader-info">
-                            <i class="fa-solid fa-user"></i> Subido por: <?php echo $row['nombre_uploader']; ?>
-                        </div>
+                        <div class="uploader-info"><i class="fa-solid fa-user"></i> Subido por: <?php echo $row['nombre_uploader']; ?></div>
                         <div style="margin-top:20px; display:flex; gap:10px;">
                             <a href="editar_recurso.php?id=<?php echo $row['id']; ?>" class="action-btn btn-edit" style="flex:1; text-align:center;"><i class="fa-solid fa-pen"></i> Editar</a>
                             <a href="admin_panel.php?action=delete&id=<?php echo $row['id']; ?>" onclick="return confirm('¿Eliminar permanentemente?');" class="action-btn btn-delete" style="flex:1; text-align:center;"><i class="fa-solid fa-trash"></i></a>
